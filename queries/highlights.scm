@@ -102,7 +102,7 @@
 (string) @string
 (char) @string.special
 (number) @number
-(boolean) @constant.builtin
+(boolean) @boolean
 
 ; Comments
 
