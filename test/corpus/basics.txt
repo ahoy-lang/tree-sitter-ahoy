@@ -1,0 +1,196 @@
+================================================================================
+Simple variable declarations
+================================================================================
+
+x: 42
+name: "Ahoy"
+active: true
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (number))
+  (variable_declaration
+    name: (identifier)
+    value: (string))
+  (variable_declaration
+    name: (identifier)
+    value: (boolean)))
+
+================================================================================
+Function declaration
+================================================================================
+
+func factorial|n int| int then
+    if n <= 1 then
+        return 1
+    else then
+        return n times factorial|n minus 1|
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    (parameter_list
+      (parameter
+        name: (identifier)
+        type: (type)))
+    return_type: (type)
+    body: (block
+      (if_statement
+        condition: (binary_expression
+          left: (identifier)
+          operator: (string)
+          right: (number))
+        consequence: (block
+          (return_statement
+            value: (number)))
+        alternative: (block
+          (return_statement
+            value: (binary_expression)))))))
+
+================================================================================
+Loop with range
+================================================================================
+
+loop:0 to 3 then
+    ahoy|"iteration\n"|
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (loop_statement
+    start: (number)
+    end: (number)
+    body: (block
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          (argument_list
+            (string)))))))
+
+================================================================================
+Array operations
+================================================================================
+
+numbers: <10, 20, 30>
+first: numbers<0>
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (array_literal
+      (number)
+      (number)
+      (number)))
+  (variable_declaration
+    name: (identifier)
+    value: (array_access
+      array: (identifier)
+      index: (number))))
+
+================================================================================
+Dictionary operations
+================================================================================
+
+person: {"name":"Alice", "age":30}
+name: person{"name"}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (dict_literal
+      (dict_pair
+        key: (string)
+        value: (string))
+      (dict_pair
+        key: (string)
+        value: (number))))
+  (variable_declaration
+    name: (identifier)
+    value: (dict_access
+      dict: (identifier)
+      key: (string))))
+
+================================================================================
+Word operators
+================================================================================
+
+sum: a plus b
+diff: a minus b
+product: a times b
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (binary_expression
+      left: (identifier)
+      operator: (string)
+      right: (identifier)))
+  (variable_declaration
+    name: (identifier)
+    value: (binary_expression
+      left: (identifier)
+      operator: (string)
+      right: (identifier)))
+  (variable_declaration
+    name: (identifier)
+    value: (binary_expression
+      left: (identifier)
+      operator: (string)
+      right: (identifier))))
+
+================================================================================
+Import statement
+================================================================================
+
+import "stdio.h"
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (import_statement
+    path: (string)))
+
+================================================================================
+When statement
+================================================================================
+
+when DEBUG then
+    ahoy|"Debug mode\n"|
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (when_statement
+    condition: (identifier)
+    body: (block
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          (argument_list
+            (string)))))))
+
+================================================================================
+Comments
+================================================================================
+
+? This is a comment
+x: 42
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment)
+  (variable_declaration
+    name: (identifier)
+    value: (number)))
