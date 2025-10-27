@@ -10,6 +10,7 @@ module.exports = grammar({
     [$.call_expression, $.expression],
     [$.array_access, $.array_literal],
     [$.dict_access, $.dict_literal],
+    [$.object_literal, $.dict_literal],
     [$._statement, $.if_statement],
     [$._statement, $.case_statement],
   ],
@@ -31,6 +32,8 @@ module.exports = grammar({
       $.import_statement,
       $.function_declaration,
       $.variable_declaration,
+      $.constant_declaration,
+      $.struct_declaration,
       $.if_statement,
       $.switch_statement,
       $.loop_statement,
@@ -47,16 +50,21 @@ module.exports = grammar({
       field('path', $.string),
     ),
 
-    // Function declaration
+    // Function declaration with :: syntax
     function_declaration: $ => seq(
-      'func',
       field('name', $.identifier),
+      '::',
       '|',
       optional($.parameter_list),
       '|',
-      optional(field('return_type', $.type)),
-      'then',
+      optional(field('return_type', $.return_types)),
+      ':',
       field('body', $.block),
+    ),
+
+    return_types: $ => seq(
+      $.type,
+      repeat(seq(',', $.type)),
     ),
 
     parameter_list: $ => seq(
@@ -66,6 +74,7 @@ module.exports = grammar({
 
     parameter: $ => seq(
       field('name', $.identifier),
+      ':',
       field('type', $.type),
     ),
 
@@ -75,6 +84,9 @@ module.exports = grammar({
       'string',
       'bool',
       'dict',
+      'vector2',
+      'color',
+      $.identifier,
     ),
 
     // Variable declaration
@@ -82,6 +94,47 @@ module.exports = grammar({
       field('name', $.identifier),
       ':',
       field('value', $.expression),
+    ),
+
+    // Constant declaration
+    constant_declaration: $ => seq(
+      field('name', $.identifier),
+      '::',
+      field('value', $.expression),
+    ),
+
+    // Struct declaration
+    struct_declaration: $ => seq(
+      'struct',
+      optional(field('name', $.identifier)),
+      ':',
+      field('body', $.struct_body),
+    ),
+
+    struct_body: $ => prec.right(seq(
+      repeat(choice(';', '\n')),
+      $.struct_field,
+      repeat(seq(
+        repeat1(choice(';', '\n')),
+        $.struct_field,
+      )),
+      repeat(choice(';', '\n')),
+    )),
+
+    struct_field: $ => choice(
+      // Regular field: position: vector2
+      seq(
+        field('name', $.identifier),
+        ':',
+        field('type', $.type),
+      ),
+      // Nested type: type smoke_particle: ...
+      prec.right(seq(
+        'type',
+        field('name', $.identifier),
+        ':',
+        optional($.struct_body),
+      )),
     ),
 
     // If statement (supports inline and multi-line)
@@ -147,7 +200,7 @@ module.exports = grammar({
           field('iterable', $.expression),
         ),
       ),
-      'then',
+      ':',
       field('body', $.block),
     ),
 
@@ -183,8 +236,10 @@ module.exports = grammar({
       $.call_expression,
       $.array_access,
       $.dict_access,
+      $.member_access,
       $.array_literal,
       $.dict_literal,
+      $.object_literal,
       $.identifier,
       $.number,
       $.string,
@@ -217,7 +272,7 @@ module.exports = grammar({
           '>=',
           '<=',
           'greater_than',
-          'lesser_than',
+          'less_than',
         )),
         field('right', $.expression),
       )),
@@ -254,15 +309,15 @@ module.exports = grammar({
       repeat(seq(',', $.expression)),
     ),
 
-    // Array access
+    // Array access with []
     array_access: $ => prec(8, seq(
       field('array', choice($.identifier, $.call_expression)),
-      '<',
+      '[',
       field('index', $.expression),
-      '>',
+      ']',
     )),
 
-    // Dict access
+    // Dict access with {}
     dict_access: $ => prec(8, seq(
       field('dict', choice($.identifier, $.call_expression)),
       '{',
@@ -270,17 +325,24 @@ module.exports = grammar({
       '}',
     )),
 
-    // Array literal
+    // Member access with dot notation
+    member_access: $ => prec(9, seq(
+      field('object', choice($.identifier, $.call_expression, $.member_access)),
+      '.',
+      field('member', $.identifier),
+    )),
+
+    // Array literal with []
     array_literal: $ => seq(
-      '<',
+      '[',
       optional(seq(
         $.expression,
         repeat(seq(',', $.expression)),
       )),
-      '>',
+      ']',
     ),
 
-    // Dict literal
+    // Dict literal with {}
     dict_literal: $ => seq(
       '{',
       optional(seq(
@@ -288,6 +350,22 @@ module.exports = grammar({
         repeat(seq(',', $.dict_pair)),
       )),
       '}',
+    ),
+
+    // Object literal with <>
+    object_literal: $ => seq(
+      '<',
+      optional(seq(
+        $.object_pair,
+        repeat(seq(',', $.object_pair)),
+      )),
+      '>',
+    ),
+
+    object_pair: $ => seq(
+      field('key', $.identifier),
+      ':',
+      field('value', $.expression),
     ),
 
     dict_pair: $ => seq(

@@ -14,6 +14,8 @@
   "return"
   "import"
   "when"
+  "struct"
+  "type"
 ] @keyword
 
 ; Function calls
@@ -30,7 +32,7 @@
 
 (call_expression
   function: (identifier) @function.builtin
-  (#match? @function.builtin "^(ahoy|print)$"))
+  (#match? @function.builtin "^(ahoy|ahoyf|print|printf)$"))
 
 ; Types
 
@@ -42,6 +44,8 @@
   "string"
   "bool"
   "dict"
+  "vector2"
+  "color"
 ] @type.builtin
 
 ; Variables
@@ -54,6 +58,15 @@
 (variable_declaration
   name: (identifier) @variable)
 
+(constant_declaration
+  name: (identifier) @constant)
+
+(struct_declaration
+  name: (identifier) @type)
+
+(struct_field
+  name: (identifier) @property)
+
 ; Operators
 
 [
@@ -63,7 +76,7 @@
   "div"
   "mod"
   "greater_than"
-  "lesser_than"
+  "less_than"
   "is"
   "and"
   "or"
@@ -93,6 +106,8 @@
   ")"
   "{"
   "}"
+  "["
+  "]"
   "<"
   ">"
 ] @punctuation.bracket
@@ -102,7 +117,7 @@
 (string) @string
 (char) @string.special
 (number) @number
-(boolean) @boolean
+(boolean) @constant.builtin
 
 ; Comments
 
