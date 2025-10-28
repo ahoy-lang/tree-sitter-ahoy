@@ -4,18 +4,18 @@
   "if"
   "then"
   "else"
-  "elseif"
   "anif"
   "loop"
+  "do"
   "to"
   "in"
   "switch"
-  "func"
   "return"
   "import"
   "when"
   "struct"
   "type"
+  "enum"
 ] @keyword
 
 ; Function calls
@@ -32,7 +32,7 @@
 
 (call_expression
   function: (identifier) @function.builtin
-  (#match? @function.builtin "^(ahoy|ahoyf|print|printf)$"))
+  (#match? @function.builtin "^(ahoy|ahoyf|print|printf|sprintf|sahoyf)$"))
 
 ; Types
 

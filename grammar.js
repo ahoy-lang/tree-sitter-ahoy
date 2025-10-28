@@ -31,14 +31,17 @@ module.exports = grammar({
     _statement: $ => choice(
       $.import_statement,
       $.function_declaration,
-      $.variable_declaration,
       $.constant_declaration,
+      $.enum_declaration,
       $.struct_declaration,
+      $.tuple_assignment,
+      $.variable_declaration,
       $.if_statement,
       $.switch_statement,
       $.loop_statement,
       $.when_statement,
       $.return_statement,
+      $.method_call,
       $.call_expression,
     ),
 
@@ -137,6 +140,41 @@ module.exports = grammar({
       )),
     ),
 
+    // Enum declaration
+    enum_declaration: $ => seq(
+      field('name', $.identifier),
+      'enum',
+      ':',
+      field('members', $.enum_members),
+    ),
+
+    enum_members: $ => prec.right(seq(
+      repeat(choice(';', '\n')),
+      $.identifier,
+      repeat(seq(
+        repeat1(choice(';', '\n')),
+        $.identifier,
+      )),
+      repeat(choice(';', '\n')),
+    )),
+
+    // Tuple assignment (multiple assignment)
+    tuple_assignment: $ => seq(
+      field('targets', $.identifier_list),
+      ':',
+      field('values', $.expression_list),
+    ),
+
+    identifier_list: $ => seq(
+      $.identifier,
+      repeat1(seq(',', $.identifier)),
+    ),
+
+    expression_list: $ => seq(
+      $.expression,
+      repeat1(seq(',', $.expression)),
+    ),
+
     // If statement (supports inline and multi-line)
     if_statement: $ => prec.right(seq(
       'if',
@@ -145,7 +183,7 @@ module.exports = grammar({
       field('consequence', choice($.block, $.call_expression)),
       optional(choice(
         seq(
-          choice('elseif', 'anif'),
+          'anif',
           field('alternative_condition', $.expression),
           'then',
           field('alternative', choice($.block, $.call_expression)),
@@ -200,7 +238,7 @@ module.exports = grammar({
           field('iterable', $.expression),
         ),
       ),
-      ':',
+      'do',
       field('body', $.block),
     ),
 
@@ -234,6 +272,7 @@ module.exports = grammar({
       $.binary_expression,
       $.unary_expression,
       $.call_expression,
+      $.method_call,
       $.array_access,
       $.dict_access,
       $.member_access,
@@ -308,6 +347,16 @@ module.exports = grammar({
       $.expression,
       repeat(seq(',', $.expression)),
     ),
+
+    // Method call (arr.map||, arr.push|val|)
+    method_call: $ => prec(10, seq(
+      field('object', choice($.identifier, $.call_expression, $.member_access, $.method_call)),
+      '.',
+      field('method', $.identifier),
+      '|',
+      optional($.argument_list),
+      '|',
+    )),
 
     // Array access with []
     array_access: $ => prec(8, seq(
