@@ -152,8 +152,8 @@ module.exports = grammar({
 
     // Enum declaration
     enum_declaration: $ => seq(
-      field('name', $.identifier),
       'enum',
+      field('name', $.identifier),
       ':',
       field('members', $.enum_members),
     ),
@@ -210,12 +210,12 @@ module.exports = grammar({
     switch_statement: $ => prec.right(seq(
       'switch',
       field('value', $.expression),
-      choice('then', 'on'),
+      choice('then', 'on', ':'),
       repeat1($.case_statement),
     )),
 
     case_statement: $ => seq(
-      field('pattern', $.expression),
+      field('pattern', choice($.expression, '_')),
       ':',
       field('body', choice($.block, $.call_expression)),
     ),
@@ -223,15 +223,16 @@ module.exports = grammar({
     // Loop statement (multiple variants)
     loop_statement: $ => seq(
       'loop',
-      optional(':'),
       choice(
-        // Range loop: loop:start to end
+        // Range loop with variable: loop i from start to end
         seq(
+          field('variable', $.identifier),
+          'from',
           field('start', $.expression),
           'to',
           field('end', $.expression),
         ),
-        // Range loop with from: loop from start to end
+        // Range loop: loop from start to end
         seq(
           'from',
           field('start', $.expression),
@@ -244,7 +245,7 @@ module.exports = grammar({
           'till',
           field('condition', $.expression),
         ),
-        // While loop: loop:condition
+        // While loop: loop condition
         field('condition', $.expression),
         // Array loop: loop element in array
         seq(
@@ -261,7 +262,7 @@ module.exports = grammar({
           field('iterable', $.expression),
         ),
       ),
-      'do',
+      choice('do', ':'),
       field('body', $.block),
     ),
 
