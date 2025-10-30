@@ -176,6 +176,10 @@
       "required": true,
       "types": [
         {
+          "type": "break_statement",
+          "named": true
+        },
+        {
           "type": "call_expression",
           "named": true
         },
@@ -209,6 +213,10 @@
         },
         {
           "type": "return_statement",
+          "named": true
+        },
+        {
+          "type": "skip_statement",
           "named": true
         },
         {
@@ -991,6 +999,10 @@
       "required": false,
       "types": [
         {
+          "type": "break_statement",
+          "named": true
+        },
+        {
           "type": "call_expression",
           "named": true
         },
@@ -1028,6 +1040,10 @@
         },
         {
           "type": "return_statement",
+          "named": true
+        },
+        {
+          "type": "skip_statement",
           "named": true
         },
         {
@@ -1368,6 +1384,10 @@
     "named": false
   },
   {
+    "type": "break_statement",
+    "named": true
+  },
+  {
     "type": "char",
     "named": true
   },
@@ -1481,12 +1501,16 @@
     "named": false
   },
   {
-    "type": "string",
+    "type": "skip_statement",
     "named": true
   },
   {
     "type": "string",
     "named": false
+  },
+  {
+    "type": "string",
+    "named": true
   },
   {
     "type": "struct",

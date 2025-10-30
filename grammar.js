@@ -49,6 +49,8 @@ module.exports = grammar({
       $.loop_statement,
       $.when_statement,
       $.return_statement,
+      $.break_statement,
+      $.skip_statement,
       $.method_call,
       $.call_expression,
     ),
@@ -276,6 +278,12 @@ module.exports = grammar({
       'return',
       optional(field('value', $.expression)),
     )),
+
+    // Break statement (exit loop)
+    break_statement: $ => 'break',
+
+    // Skip statement (continue to next iteration)
+    skip_statement: $ => 'skip',
 
     // Block
     block: $ => prec.right(seq(
