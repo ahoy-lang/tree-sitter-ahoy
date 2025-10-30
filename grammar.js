@@ -18,6 +18,7 @@ module.exports = grammar({
   rules: {
     source_file: $ => seq(
       repeat(choice(';', '\n')),
+      optional($.program_declaration),
       optional(seq(
         $._statement,
         repeat(seq(
@@ -26,6 +27,13 @@ module.exports = grammar({
         )),
         repeat(choice(';', '\n')),
       )),
+    ),
+
+    // Program declaration (package name)
+    program_declaration: $ => seq(
+      'program',
+      field('name', $.identifier),
+      repeat1(choice(';', '\n')),
     ),
 
     _statement: $ => choice(
@@ -200,7 +208,7 @@ module.exports = grammar({
     switch_statement: $ => prec.right(seq(
       'switch',
       field('value', $.expression),
-      'then',
+      choice('then', 'on'),
       repeat1($.case_statement),
     )),
 
@@ -220,6 +228,19 @@ module.exports = grammar({
           field('start', $.expression),
           'to',
           field('end', $.expression),
+        ),
+        // Range loop with from: loop from start to end
+        seq(
+          'from',
+          field('start', $.expression),
+          'to',
+          field('end', $.expression),
+        ),
+        // While loop with till: loop till condition
+        seq(
+          field('variable', $.identifier),
+          'till',
+          field('condition', $.expression),
         ),
         // While loop: loop:condition
         field('condition', $.expression),

@@ -25,6 +25,18 @@
           "type": "CHOICE",
           "members": [
             {
+              "type": "SYMBOL",
+              "name": "program_declaration"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
               "type": "SEQ",
               "members": [
                 {
@@ -81,6 +93,39 @@
               "type": "BLANK"
             }
           ]
+        }
+      ]
+    },
+    "program_declaration": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "program"
+        },
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
+        },
+        {
+          "type": "REPEAT1",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": ";"
+              },
+              {
+                "type": "STRING",
+                "value": "\n"
+              }
+            ]
+          }
         }
       ]
     },
@@ -909,8 +954,17 @@
             }
           },
           {
-            "type": "STRING",
-            "value": "then"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "then"
+              },
+              {
+                "type": "STRING",
+                "value": "on"
+              }
+            ]
           },
           {
             "type": "REPEAT1",
@@ -996,6 +1050,60 @@
                 {
                   "type": "FIELD",
                   "name": "end",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "expression"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "from"
+                },
+                {
+                  "type": "FIELD",
+                  "name": "start",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "expression"
+                  }
+                },
+                {
+                  "type": "STRING",
+                  "value": "to"
+                },
+                {
+                  "type": "FIELD",
+                  "name": "end",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "expression"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "FIELD",
+                  "name": "variable",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "identifier"
+                  }
+                },
+                {
+                  "type": "STRING",
+                  "value": "till"
+                },
+                {
+                  "type": "FIELD",
+                  "name": "condition",
                   "content": {
                     "type": "SYMBOL",
                     "name": "expression"
