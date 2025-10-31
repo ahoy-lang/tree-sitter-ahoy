@@ -20,8 +20,8 @@
   "type"
   "enum"
   "program"
-  "break"
-  "skip"
+  "halt"
+  "next"
 ] @keyword
 
 ; Function calls
@@ -96,6 +96,7 @@
   "<"
   ">="
   "<="
+  "??"
 ] @operator
 
 ; Punctuation

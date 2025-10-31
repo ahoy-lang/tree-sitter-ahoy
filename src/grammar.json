@@ -182,11 +182,11 @@
         },
         {
           "type": "SYMBOL",
-          "name": "break_statement"
+          "name": "halt_statement"
         },
         {
           "type": "SYMBOL",
-          "name": "skip_statement"
+          "name": "next_statement"
         },
         {
           "type": "SYMBOL",
@@ -201,17 +201,21 @@
     "comment": {
       "type": "TOKEN",
       "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "STRING",
-            "value": "?"
-          },
-          {
-            "type": "PATTERN",
-            "value": ".*"
-          }
-        ]
+        "type": "PREC",
+        "value": 1,
+        "content": {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "?"
+            },
+            {
+              "type": "PATTERN",
+              "value": "[^?].*"
+            }
+          ]
+        }
       }
     },
     "import_statement": {
@@ -1285,13 +1289,13 @@
         ]
       }
     },
-    "break_statement": {
+    "halt_statement": {
       "type": "STRING",
-      "value": "break"
+      "value": "halt"
     },
-    "skip_statement": {
+    "next_statement": {
       "type": "STRING",
-      "value": "skip"
+      "value": "next"
     },
     "block": {
       "type": "PREC_RIGHT",
@@ -1371,6 +1375,10 @@
       "members": [
         {
           "type": "SYMBOL",
+          "name": "ternary_expression"
+        },
+        {
+          "type": "SYMBOL",
           "name": "binary_expression"
         },
         {
@@ -1434,6 +1442,47 @@
           "name": "parenthesized_expression"
         }
       ]
+    },
+    "ternary_expression": {
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "FIELD",
+            "name": "condition",
+            "content": {
+              "type": "SYMBOL",
+              "name": "expression"
+            }
+          },
+          {
+            "type": "STRING",
+            "value": "??"
+          },
+          {
+            "type": "FIELD",
+            "name": "consequence",
+            "content": {
+              "type": "SYMBOL",
+              "name": "expression"
+            }
+          },
+          {
+            "type": "STRING",
+            "value": ":"
+          },
+          {
+            "type": "FIELD",
+            "name": "alternative",
+            "content": {
+              "type": "SYMBOL",
+              "name": "expression"
+            }
+          }
+        ]
+      }
     },
     "binary_expression": {
       "type": "CHOICE",

@@ -49,13 +49,13 @@ module.exports = grammar({
       $.loop_statement,
       $.when_statement,
       $.return_statement,
-      $.break_statement,
-      $.skip_statement,
+      $.halt_statement,
+      $.next_statement,
       $.method_call,
       $.call_expression,
     ),
 
-    comment: $ => token(seq('?', /.*/)),
+    comment: $ => token(prec(1, seq('?', /[^?].*/))),
 
     // Import statement
     import_statement: $ => seq(
@@ -280,11 +280,11 @@ module.exports = grammar({
       optional(field('value', $.expression)),
     )),
 
-    // Break statement (exit loop)
-    break_statement: $ => 'break',
+    // Halt statement (exit loop)
+    halt_statement: $ => 'halt',
 
-    // Skip statement (continue to next iteration)
-    skip_statement: $ => 'skip',
+    // Next statement (continue to next iteration)
+    next_statement: $ => 'next',
 
     // Block
     block: $ => prec.right(seq(
@@ -299,6 +299,7 @@ module.exports = grammar({
 
     // Expressions
     expression: $ => choice(
+      $.ternary_expression,
       $.binary_expression,
       $.unary_expression,
       $.call_expression,
@@ -316,6 +317,15 @@ module.exports = grammar({
       $.boolean,
       $.parenthesized_expression,
     ),
+
+    // Ternary expression
+    ternary_expression: $ => prec.right(0, seq(
+      field('condition', $.expression),
+      '??',
+      field('consequence', $.expression),
+      ':',
+      field('alternative', $.expression),
+    )),
 
     // Binary expressions with precedence
     binary_expression: $ => choice(

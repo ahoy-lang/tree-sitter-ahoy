@@ -176,10 +176,6 @@
       "required": true,
       "types": [
         {
-          "type": "break_statement",
-          "named": true
-        },
-        {
           "type": "call_expression",
           "named": true
         },
@@ -193,6 +189,10 @@
         },
         {
           "type": "function_declaration",
+          "named": true
+        },
+        {
+          "type": "halt_statement",
           "named": true
         },
         {
@@ -212,11 +212,11 @@
           "named": true
         },
         {
-          "type": "return_statement",
+          "type": "next_statement",
           "named": true
         },
         {
-          "type": "skip_statement",
+          "type": "return_statement",
           "named": true
         },
         {
@@ -511,6 +511,10 @@
         },
         {
           "type": "string",
+          "named": true
+        },
+        {
+          "type": "ternary_expression",
           "named": true
         },
         {
@@ -1003,10 +1007,6 @@
       "required": false,
       "types": [
         {
-          "type": "break_statement",
-          "named": true
-        },
-        {
           "type": "call_expression",
           "named": true
         },
@@ -1020,6 +1020,10 @@
         },
         {
           "type": "function_declaration",
+          "named": true
+        },
+        {
+          "type": "halt_statement",
           "named": true
         },
         {
@@ -1039,15 +1043,15 @@
           "named": true
         },
         {
+          "type": "next_statement",
+          "named": true
+        },
+        {
           "type": "program_declaration",
           "named": true
         },
         {
           "type": "return_statement",
-          "named": true
-        },
-        {
-          "type": "skip_statement",
           "named": true
         },
         {
@@ -1174,6 +1178,42 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "ternary_expression",
+    "named": true,
+    "fields": {
+      "alternative": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "condition": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "consequence": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -1368,6 +1408,10 @@
     "named": false
   },
   {
+    "type": "??",
+    "named": false
+  },
+  {
     "type": "[",
     "named": false
   },
@@ -1390,10 +1434,6 @@
   {
     "type": "bool",
     "named": false
-  },
-  {
-    "type": "break_statement",
-    "named": true
   },
   {
     "type": "char",
@@ -1445,6 +1485,10 @@
     "named": false
   },
   {
+    "type": "halt_statement",
+    "named": true
+  },
+  {
     "type": "identifier",
     "named": true
   },
@@ -1485,6 +1529,10 @@
     "named": false
   },
   {
+    "type": "next_statement",
+    "named": true
+  },
+  {
     "type": "not",
     "named": false
   },
@@ -1509,16 +1557,12 @@
     "named": false
   },
   {
-    "type": "skip_statement",
+    "type": "string",
     "named": true
   },
   {
     "type": "string",
     "named": false
-  },
-  {
-    "type": "string",
-    "named": true
   },
   {
     "type": "struct",
