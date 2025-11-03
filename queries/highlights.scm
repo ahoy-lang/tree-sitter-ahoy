@@ -13,16 +13,21 @@
   "till"
   "switch"
   "on"
-  "return"
-  "import"
   "when"
+  "import"
   "struct"
   "type"
   "enum"
   "program"
-  "halt"
-  "next"
 ] @keyword
+
+[
+  "return"
+] @keyword.return
+
+; Statement keywords
+(halt_statement) @keyword
+(next_statement) @keyword
 
 ; Function calls
 
@@ -72,6 +77,11 @@
 
 (struct_field
   name: (identifier) @property)
+
+(enum_declaration
+  name: (identifier) @type)
+
+(type) @type
 
 ; Operators
 
