@@ -1,4 +1,4 @@
-; Indent after control structures and declarations
+; Zed indentation - use @indent capture
 [
   (block)
   (function_declaration)
@@ -10,17 +10,11 @@
   (struct_declaration)
   (struct_body)
   (when_statement)
-] @indent.begin
+] @indent
 
-; Closing brackets
+; Outdent on closing brackets
 [
   ")"
   "]"
   "}"
-] @indent.branch @indent.end
-
-[
-  (comment)
-  (string)
-  (ERROR)
-] @indent.auto
+] @outdent

@@ -3,8 +3,14 @@ module.exports = grammar({
 
   word: $ => $.identifier,
 
+  externals: $ => [
+    $._indent,
+    $._dedent,
+    $._newline,
+  ],
+
   extras: $ => [
-    /\s/,
+    /[ \t]/,  // Only spaces and tabs, not newlines
     $.comment,
   ],
 
@@ -303,16 +309,15 @@ module.exports = grammar({
     // Next statement (continue to next iteration)
     next_statement: $ => 'next',
 
-    // Block
-    block: $ => prec.right(seq(
-      repeat(choice(';', '\n')),
-      $._statement,
-      repeat(seq(
-        repeat1(choice(';', '\n')),
+    // Block with indentation
+    block: $ => seq(
+      $._indent,
+      repeat1(seq(
         $._statement,
+        $._newline,
       )),
-      repeat(choice(';', '\n')),
-    )),
+      $._dedent,
+    ),
 
     // Expressions
     expression: $ => choice(

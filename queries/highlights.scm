@@ -1,4 +1,6 @@
-; Keywords
+; Keywords - ONLY highlight statement-level keywords, not anonymous tokens
+; Anonymous tokens like "do", "in", "to" are part of the syntax structure
+; but should NOT be highlighted separately (they would match in identifiers)
 
 [
   "if"
@@ -6,27 +8,27 @@
   "else"
   "anif"
   "loop"
-  "do"
-  "to"
-  "in"
-  "till"
   "switch"
-  "on"
   "when"
   "import"
   "struct"
-  "type"
   "enum"
   "program"
+  "return"
 ] @keyword
 
-[
-  "return"
-] @keyword.return
+; Statement keywords (these are actual nodes, not anonymous tokens)
+(halt_statement) @keyword.control
+(next_statement) @keyword.control
 
-; Statement keywords
-(halt_statement) @keyword
-(next_statement) @keyword
+; Loop statement itself is a keyword context
+(loop_statement) @_loop
+(switch_statement) @_switch
+
+; Type keyword only in specific contexts
+(struct_declaration "struct" @keyword)
+(enum_declaration "enum" @keyword)
+(struct_field "type" @keyword)
 
 ; Function calls
 
