@@ -8,7 +8,6 @@
   "loop"
   "do"
   "to"
-  "from"
   "in"
   "till"
   "switch"
@@ -135,6 +134,10 @@
 (char) @string.special
 (number) @number
 (boolean) @constant.builtin
+
+; Typed object literals
+(typed_object_literal
+  type_name: (identifier) @type)
 
 ; Comments
 

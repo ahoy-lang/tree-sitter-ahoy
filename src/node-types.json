@@ -518,6 +518,10 @@
           "named": true
         },
         {
+          "type": "typed_object_literal",
+          "named": true
+        },
+        {
           "type": "unary_expression",
           "named": true
         }
@@ -1258,6 +1262,32 @@
     }
   },
   {
+    "type": "typed_object_literal",
+    "named": true,
+    "fields": {
+      "type_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "object_pair",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "unary_expression",
     "named": true,
     "fields": {
@@ -1477,10 +1507,6 @@
     "named": false
   },
   {
-    "type": "from",
-    "named": false
-  },
-  {
     "type": "greater_than",
     "named": false
   },
@@ -1558,11 +1584,11 @@
   },
   {
     "type": "string",
-    "named": true
+    "named": false
   },
   {
     "type": "string",
-    "named": false
+    "named": true
   },
   {
     "type": "struct",

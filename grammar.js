@@ -1,16 +1,15 @@
 module.exports = grammar({
   name: 'ahoy',
 
+  word: $ => $.identifier,
+
   extras: $ => [
     /\s/,
     $.comment,
   ],
 
   conflicts: $ => [
-    [$.call_expression, $.expression],
-    [$.array_access, $.array_literal],
-    [$.dict_access, $.dict_literal],
-    [$.object_literal, $.dict_literal],
+    [$.typed_object_literal, $.expression],
     [$._statement, $.if_statement],
     [$._statement, $.case_statement],
   ],
@@ -224,29 +223,47 @@ module.exports = grammar({
     loop_statement: $ => seq(
       'loop',
       choice(
-        // Range loop with variable: loop i from start to end
+        // Range loop with variable: loop i:start to end
         seq(
           field('variable', $.identifier),
-          'from',
+          ':',
           field('start', $.expression),
           'to',
           field('end', $.expression),
         ),
-        // Range loop: loop from start to end
+        // Range loop without init: loop i to end (starts at 0)
         seq(
-          'from',
-          field('start', $.expression),
+          field('variable', $.identifier),
           'to',
           field('end', $.expression),
         ),
-        // While loop with till: loop till condition
+        // While loop with init and till: loop i:start till condition
+        seq(
+          field('variable', $.identifier),
+          ':',
+          field('start', $.expression),
+          'till',
+          field('condition', $.expression),
+        ),
+        // While loop with till: loop i till condition
         seq(
           field('variable', $.identifier),
           'till',
           field('condition', $.expression),
         ),
-        // While loop: loop condition
-        field('condition', $.expression),
+        // While loop without variable: loop till condition
+        seq(
+          'till',
+          field('condition', $.expression),
+        ),
+        // Forever loop with counter: loop i:start
+        seq(
+          field('variable', $.identifier),
+          ':',
+          field('start', $.expression),
+        ),
+        // Forever loop without args: loop
+        seq(),
         // Array loop: loop element in array
         seq(
           field('element', $.identifier),
@@ -309,6 +326,7 @@ module.exports = grammar({
       $.member_access,
       $.array_literal,
       $.dict_literal,
+      $.typed_object_literal,
       $.object_literal,
       $.identifier,
       $.number,
@@ -443,6 +461,17 @@ module.exports = grammar({
 
     // Object literal with <>
     object_literal: $ => seq(
+      '<',
+      optional(seq(
+        $.object_pair,
+        repeat(seq(',', $.object_pair)),
+      )),
+      '>',
+    ),
+
+    // Typed object literal: rectangle<x: 1, y: 2>
+    typed_object_literal: $ => seq(
+      field('type_name', $.identifier),
       '<',
       optional(seq(
         $.object_pair,
