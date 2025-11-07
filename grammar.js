@@ -77,7 +77,7 @@ module.exports = grammar({
 					repeat(choice(";", "\n")),
 					repeat($._statement),
 					repeat(choice(";", "\n")),
-					"end",
+					"$",
 				),
 			),
 
@@ -142,7 +142,7 @@ module.exports = grammar({
 				$.struct_field_multiline,
 				repeat(seq(repeat1(choice(";", "\n")), $.struct_field_multiline)),
 				repeat(choice(";", "\n")),
-				"end",
+				"$",
 			),
 
 		struct_field_oneline: ($) =>
@@ -203,7 +203,7 @@ module.exports = grammar({
 				$.enum_member,
 				repeat(seq(repeat1(choice(";", "\n")), $.enum_member)),
 				repeat(choice(";", "\n")),
-				"end",
+				"$",
 			),
 
 		enum_member: ($) =>
@@ -284,7 +284,7 @@ module.exports = grammar({
 						),
 					),
 					repeat(choice(";", "\n")),
-					"end",
+					"$",
 				),
 			),
 
@@ -306,7 +306,7 @@ module.exports = grammar({
 					repeat(choice(";", "\n")),
 					repeat1($.case_statement),
 					repeat(choice(";", "\n")),
-					"end",
+					"$",
 				),
 			),
 
@@ -469,7 +469,7 @@ module.exports = grammar({
 					repeat1(choice(";", "\n")),
 					repeat1($._statement),
 					repeat(choice(";", "\n")),
-					"end",
+					"$",
 				),
 			),
 
@@ -488,7 +488,7 @@ module.exports = grammar({
 					repeat1(choice(";", "\n")),
 					repeat1($._statement),
 					repeat(choice(";", "\n")),
-					"end",
+					"$",
 				),
 			),
 

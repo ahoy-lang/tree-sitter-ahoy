@@ -10,8 +10,8 @@
   (when_statement)
 ] @indent
 
-; Dedent on 'end' keyword
-"end" @outdent
+; Dedent on '$' keyword (block terminator)
+"$" @outdent
 
 ; Dedent on closing brackets
 [

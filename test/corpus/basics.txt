@@ -64,7 +64,7 @@ loop:0 to 3 then
 (source_file
   (loop_statement
     start: (number)
-    end: (number)
+    $: (number)
     body: (block
       (expression_statement
         (call_expression

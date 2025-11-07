@@ -348,7 +348,7 @@
           },
           {
             "type": "STRING",
-            "value": "end"
+            "value": "$"
           }
         ]
       }
@@ -704,7 +704,7 @@
         },
         {
           "type": "STRING",
-          "value": "end"
+          "value": "$"
         }
       ]
     },
@@ -1056,7 +1056,7 @@
         },
         {
           "type": "STRING",
-          "value": "end"
+          "value": "$"
         }
       ]
     },
@@ -1475,7 +1475,7 @@
           },
           {
             "type": "STRING",
-            "value": "end"
+            "value": "$"
           }
         ]
       }
@@ -1601,7 +1601,7 @@
           },
           {
             "type": "STRING",
-            "value": "end"
+            "value": "$"
           }
         ]
       }
@@ -2296,7 +2296,7 @@
           },
           {
             "type": "STRING",
-            "value": "end"
+            "value": "$"
           }
         ]
       }
@@ -2377,7 +2377,7 @@
           },
           {
             "type": "STRING",
-            "value": "end"
+            "value": "$"
           }
         ]
       }

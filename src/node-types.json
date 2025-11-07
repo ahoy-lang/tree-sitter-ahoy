@@ -1995,6 +1995,10 @@
     "named": false
   },
   {
+    "type": "$",
+    "named": false
+  },
+  {
     "type": "%",
     "named": false
   },
@@ -2113,10 +2117,6 @@
   },
   {
     "type": "else",
-    "named": false
-  },
-  {
-    "type": "end",
     "named": false
   },
   {
