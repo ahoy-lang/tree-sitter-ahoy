@@ -17,18 +17,9 @@
   "return"
 ] @keyword
 
-; Statement keywords (these are actual nodes, not anonymous tokens)
-(halt_statement) @keyword.control
-(next_statement) @keyword.control
-
-; Loop statement itself is a keyword context
-(loop_statement) @_loop
-(switch_statement) @_switch
-
-; Type keyword only in specific contexts
-(struct_declaration "struct" @keyword)
-(enum_declaration "enum" @keyword)
-(struct_field "type" @keyword)
+; Control flow keywords
+"halt" @keyword.control
+"next" @keyword.control
 
 ; Function calls
 
