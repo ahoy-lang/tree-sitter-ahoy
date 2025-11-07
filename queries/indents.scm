@@ -1,6 +1,5 @@
-; Zed indentation - use @indent capture
+; Indent after these nodes
 [
-  (block)
   (function_declaration)
   (if_statement)
   (loop_statement)
@@ -8,11 +7,13 @@
   (case_statement)
   (enum_declaration)
   (struct_declaration)
-  (struct_body)
   (when_statement)
 ] @indent
 
-; Outdent on closing brackets
+; Dedent on 'end' keyword
+"end" @outdent
+
+; Dedent on closing brackets
 [
   ")"
   "]"

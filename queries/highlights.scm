@@ -18,8 +18,7 @@
 ] @keyword
 
 ; Control flow keywords
-"halt" @keyword.control
-"next" @keyword.control
+; Note: "halt" and "next" are anonymous tokens in the grammar, cannot be highlighted
 
 ; Function calls
 
@@ -67,7 +66,10 @@
 (struct_declaration
   name: (identifier) @type)
 
-(struct_field
+(struct_field_oneline
+  name: (identifier) @property)
+
+(struct_field_multiline
   name: (identifier) @property)
 
 (enum_declaration

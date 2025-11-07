@@ -168,81 +168,6 @@
     }
   },
   {
-    "type": "block",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "call_expression",
-          "named": true
-        },
-        {
-          "type": "constant_declaration",
-          "named": true
-        },
-        {
-          "type": "enum_declaration",
-          "named": true
-        },
-        {
-          "type": "function_declaration",
-          "named": true
-        },
-        {
-          "type": "halt_statement",
-          "named": true
-        },
-        {
-          "type": "if_statement",
-          "named": true
-        },
-        {
-          "type": "import_statement",
-          "named": true
-        },
-        {
-          "type": "loop_statement",
-          "named": true
-        },
-        {
-          "type": "method_call",
-          "named": true
-        },
-        {
-          "type": "next_statement",
-          "named": true
-        },
-        {
-          "type": "return_statement",
-          "named": true
-        },
-        {
-          "type": "struct_declaration",
-          "named": true
-        },
-        {
-          "type": "switch_statement",
-          "named": true
-        },
-        {
-          "type": "tuple_assignment",
-          "named": true
-        },
-        {
-          "type": "variable_declaration",
-          "named": true
-        },
-        {
-          "type": "when_statement",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "boolean",
     "named": true,
     "fields": {}
@@ -278,23 +203,91 @@
     "named": true,
     "fields": {
       "body": {
-        "multiple": false,
+        "multiple": true,
         "required": true,
         "types": [
           {
-            "type": "block",
-            "named": true
+            "type": "\n",
+            "named": false
+          },
+          {
+            "type": ";",
+            "named": false
           },
           {
             "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "constant_declaration",
+            "named": true
+          },
+          {
+            "type": "enum_declaration",
+            "named": true
+          },
+          {
+            "type": "function_declaration",
+            "named": true
+          },
+          {
+            "type": "halt_statement",
+            "named": true
+          },
+          {
+            "type": "if_statement",
+            "named": true
+          },
+          {
+            "type": "import_statement",
+            "named": true
+          },
+          {
+            "type": "loop_statement",
+            "named": true
+          },
+          {
+            "type": "method_call",
+            "named": true
+          },
+          {
+            "type": "next_statement",
+            "named": true
+          },
+          {
+            "type": "return_statement",
+            "named": true
+          },
+          {
+            "type": "struct_declaration",
+            "named": true
+          },
+          {
+            "type": "switch_statement",
+            "named": true
+          },
+          {
+            "type": "tuple_assignment",
+            "named": true
+          },
+          {
+            "type": "variable_declaration",
+            "named": true
+          },
+          {
+            "type": "when_statement",
             "named": true
           }
         ]
       },
       "pattern": {
-        "multiple": false,
+        "multiple": true,
         "required": true,
         "types": [
+          {
+            "type": ",",
+            "named": false
+          },
           {
             "type": "_",
             "named": false
@@ -413,7 +406,11 @@
         "required": true,
         "types": [
           {
-            "type": "enum_members",
+            "type": "enum_members_multiline",
+            "named": true
+          },
+          {
+            "type": "enum_members_oneline",
             "named": true
           }
         ]
@@ -431,7 +428,33 @@
     }
   },
   {
-    "type": "enum_members",
+    "type": "enum_member",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "number",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "enum_members_multiline",
     "named": true,
     "fields": {},
     "children": {
@@ -439,7 +462,22 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
+          "type": "enum_member",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "enum_members_oneline",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "enum_member",
           "named": true
         }
       ]
@@ -544,6 +582,100 @@
     }
   },
   {
+    "type": "expression_list_or_single",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "expression_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "function_body",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "constant_declaration",
+          "named": true
+        },
+        {
+          "type": "enum_declaration",
+          "named": true
+        },
+        {
+          "type": "function_declaration",
+          "named": true
+        },
+        {
+          "type": "halt_statement",
+          "named": true
+        },
+        {
+          "type": "if_statement",
+          "named": true
+        },
+        {
+          "type": "import_statement",
+          "named": true
+        },
+        {
+          "type": "loop_statement",
+          "named": true
+        },
+        {
+          "type": "method_call",
+          "named": true
+        },
+        {
+          "type": "next_statement",
+          "named": true
+        },
+        {
+          "type": "return_statement",
+          "named": true
+        },
+        {
+          "type": "struct_declaration",
+          "named": true
+        },
+        {
+          "type": "switch_statement",
+          "named": true
+        },
+        {
+          "type": "tuple_assignment",
+          "named": true
+        },
+        {
+          "type": "variable_declaration",
+          "named": true
+        },
+        {
+          "type": "when_statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "function_declaration",
     "named": true,
     "fields": {
@@ -552,7 +684,7 @@
         "required": true,
         "types": [
           {
-            "type": "block",
+            "type": "function_body",
             "named": true
           }
         ]
@@ -605,25 +737,115 @@
     }
   },
   {
+    "type": "if_body",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "constant_declaration",
+          "named": true
+        },
+        {
+          "type": "enum_declaration",
+          "named": true
+        },
+        {
+          "type": "function_declaration",
+          "named": true
+        },
+        {
+          "type": "halt_statement",
+          "named": true
+        },
+        {
+          "type": "if_statement",
+          "named": true
+        },
+        {
+          "type": "import_statement",
+          "named": true
+        },
+        {
+          "type": "loop_statement",
+          "named": true
+        },
+        {
+          "type": "method_call",
+          "named": true
+        },
+        {
+          "type": "next_statement",
+          "named": true
+        },
+        {
+          "type": "return_statement",
+          "named": true
+        },
+        {
+          "type": "struct_declaration",
+          "named": true
+        },
+        {
+          "type": "switch_statement",
+          "named": true
+        },
+        {
+          "type": "tuple_assignment",
+          "named": true
+        },
+        {
+          "type": "variable_declaration",
+          "named": true
+        },
+        {
+          "type": "when_statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "if_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "if_statement_multiline",
+          "named": true
+        },
+        {
+          "type": "if_statement_oneline",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "if_statement_multiline",
     "named": true,
     "fields": {
       "alternative": {
-        "multiple": false,
+        "multiple": true,
         "required": false,
         "types": [
           {
-            "type": "block",
-            "named": true
-          },
-          {
-            "type": "call_expression",
+            "type": "if_body",
             "named": true
           }
         ]
       },
       "alternative_condition": {
-        "multiple": false,
+        "multiple": true,
         "required": false,
         "types": [
           {
@@ -647,11 +869,61 @@
         "required": true,
         "types": [
           {
-            "type": "block",
+            "type": "if_body",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "if_statement_oneline",
+    "named": true,
+    "fields": {
+      "alternative": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "call_expression",
             "named": true
           },
           {
+            "type": "method_call",
+            "named": true
+          }
+        ]
+      },
+      "alternative_condition": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "condition": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "consequence": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
             "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "method_call",
             "named": true
           }
         ]
@@ -675,7 +947,101 @@
     }
   },
   {
+    "type": "loop_body",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "constant_declaration",
+          "named": true
+        },
+        {
+          "type": "enum_declaration",
+          "named": true
+        },
+        {
+          "type": "function_declaration",
+          "named": true
+        },
+        {
+          "type": "halt_statement",
+          "named": true
+        },
+        {
+          "type": "if_statement",
+          "named": true
+        },
+        {
+          "type": "import_statement",
+          "named": true
+        },
+        {
+          "type": "loop_statement",
+          "named": true
+        },
+        {
+          "type": "method_call",
+          "named": true
+        },
+        {
+          "type": "next_statement",
+          "named": true
+        },
+        {
+          "type": "return_statement",
+          "named": true
+        },
+        {
+          "type": "struct_declaration",
+          "named": true
+        },
+        {
+          "type": "switch_statement",
+          "named": true
+        },
+        {
+          "type": "tuple_assignment",
+          "named": true
+        },
+        {
+          "type": "variable_declaration",
+          "named": true
+        },
+        {
+          "type": "when_statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "loop_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "loop_statement_multiline",
+          "named": true
+        },
+        {
+          "type": "loop_statement_oneline",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "loop_statement_multiline",
     "named": true,
     "fields": {
       "body": {
@@ -683,7 +1049,107 @@
         "required": true,
         "types": [
           {
-            "type": "block",
+            "type": "loop_body",
+            "named": true
+          }
+        ]
+      },
+      "condition": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "element": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "end": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "iterable": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "key": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "start": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "variable": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "loop_statement_oneline",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "method_call",
             "named": true
           }
         ]
@@ -979,7 +1445,7 @@
         "required": false,
         "types": [
           {
-            "type": "expression",
+            "type": "expression_list_or_single",
             "named": true
           }
         ]
@@ -1082,7 +1548,7 @@
     }
   },
   {
-    "type": "struct_body",
+    "type": "struct_body_multiline",
     "named": true,
     "fields": {},
     "children": {
@@ -1090,7 +1556,22 @@
       "required": true,
       "types": [
         {
-          "type": "struct_field",
+          "type": "struct_field_multiline",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "struct_body_oneline",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "struct_field_oneline",
           "named": true
         }
       ]
@@ -1105,7 +1586,11 @@
         "required": true,
         "types": [
           {
-            "type": "struct_body",
+            "type": "struct_body_multiline",
+            "named": true
+          },
+          {
+            "type": "struct_body_oneline",
             "named": true
           }
         ]
@@ -1123,7 +1608,53 @@
     }
   },
   {
-    "type": "struct_field",
+    "type": "struct_field_multiline",
+    "named": true,
+    "fields": {
+      "default": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "type": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "type",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "struct_field_multiline",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "struct_field_oneline",
     "named": true,
     "fields": {
       "name": {
@@ -1152,7 +1683,22 @@
       "required": false,
       "types": [
         {
-          "type": "struct_body",
+          "type": "struct_body_oneline",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "switch_body",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "case_statement",
           "named": true
         }
       ]
@@ -1162,6 +1708,16 @@
     "type": "switch_statement",
     "named": true,
     "fields": {
+      "cases": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "switch_body",
+            "named": true
+          }
+        ]
+      },
       "value": {
         "multiple": false,
         "required": true,
@@ -1172,16 +1728,6 @@
           }
         ]
       }
-    },
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "case_statement",
-          "named": true
-        }
-      ]
     }
   },
   {
@@ -1344,6 +1890,81 @@
     }
   },
   {
+    "type": "when_body",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "constant_declaration",
+          "named": true
+        },
+        {
+          "type": "enum_declaration",
+          "named": true
+        },
+        {
+          "type": "function_declaration",
+          "named": true
+        },
+        {
+          "type": "halt_statement",
+          "named": true
+        },
+        {
+          "type": "if_statement",
+          "named": true
+        },
+        {
+          "type": "import_statement",
+          "named": true
+        },
+        {
+          "type": "loop_statement",
+          "named": true
+        },
+        {
+          "type": "method_call",
+          "named": true
+        },
+        {
+          "type": "next_statement",
+          "named": true
+        },
+        {
+          "type": "return_statement",
+          "named": true
+        },
+        {
+          "type": "struct_declaration",
+          "named": true
+        },
+        {
+          "type": "switch_statement",
+          "named": true
+        },
+        {
+          "type": "tuple_assignment",
+          "named": true
+        },
+        {
+          "type": "variable_declaration",
+          "named": true
+        },
+        {
+          "type": "when_statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "when_statement",
     "named": true,
     "fields": {
@@ -1352,7 +1973,7 @@
         "required": true,
         "types": [
           {
-            "type": "block",
+            "type": "when_body",
             "named": true
           }
         ]
@@ -1492,6 +2113,10 @@
   },
   {
     "type": "else",
+    "named": false
+  },
+  {
+    "type": "end",
     "named": false
   },
   {
