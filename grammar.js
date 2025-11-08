@@ -75,7 +75,12 @@ module.exports = grammar({
 			prec.right(
 				seq(
 					repeat(choice(";", "\n")),
-					repeat($._statement),
+					optional(
+						seq(
+							$._statement,
+							repeat(seq(repeat1(choice(";", "\n")), $._statement)),
+						),
+					),
 					repeat(choice(";", "\n")),
 					"$",
 				),
@@ -241,19 +246,43 @@ module.exports = grammar({
 					"if",
 					field("condition", $.expression),
 					"then",
-					field("consequence", choice($.call_expression, $.method_call)),
+					field(
+						"consequence",
+						choice(
+							$.call_expression,
+							$.method_call,
+							$.variable_declaration,
+							$.tuple_assignment,
+						),
+					),
 					repeat(
 						seq(
 							"anif",
 							field("alternative_condition", $.expression),
 							"then",
-							field("alternative", choice($.call_expression, $.method_call)),
+							field(
+								"alternative",
+								choice(
+									$.call_expression,
+									$.method_call,
+									$.variable_declaration,
+									$.tuple_assignment,
+								),
+							),
 						),
 					),
 					optional(
 						seq(
 							"else",
-							field("alternative", choice($.call_expression, $.method_call)),
+							field(
+								"alternative",
+								choice(
+									$.call_expression,
+									$.method_call,
+									$.variable_declaration,
+									$.tuple_assignment,
+								),
+							),
 						),
 					),
 				),
@@ -289,7 +318,13 @@ module.exports = grammar({
 			),
 
 		if_body: ($) =>
-			prec.right(seq(repeat1(choice(";", "\n")), repeat1($._statement))),
+			prec.right(
+				seq(
+					repeat1(choice(";", "\n")),
+					$._statement,
+					repeat(seq(repeat1(choice(";", "\n")), $._statement)),
+				),
+			),
 
 		// Switch statement (always multi-line, always needs end)
 		switch_statement: ($) =>

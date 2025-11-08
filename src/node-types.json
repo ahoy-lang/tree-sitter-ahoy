@@ -891,6 +891,14 @@
           {
             "type": "method_call",
             "named": true
+          },
+          {
+            "type": "tuple_assignment",
+            "named": true
+          },
+          {
+            "type": "variable_declaration",
+            "named": true
           }
         ]
       },
@@ -924,6 +932,14 @@
           },
           {
             "type": "method_call",
+            "named": true
+          },
+          {
+            "type": "tuple_assignment",
+            "named": true
+          },
+          {
+            "type": "variable_declaration",
             "named": true
           }
         ]
