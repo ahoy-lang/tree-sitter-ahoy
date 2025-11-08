@@ -1,7 +1,4 @@
-; Keywords - ONLY highlight statement-level keywords, not anonymous tokens
-; Anonymous tokens like "do", "in", "to" are part of the syntax structure
-; but should NOT be highlighted separately (they would match in identifiers)
-
+; Keywords
 [
   "if"
   "then"
@@ -15,6 +12,13 @@
   "enum"
   "program"
   "return"
+  "do"
+  "to"
+  "till"
+  "in"
+  "on"
+  "halt"
+  "next"
 ] @keyword
 
 ; Control flow keywords
