@@ -12,10 +12,3 @@
 
 ; Dedent on '$' keyword (block terminator)
 "$" @outdent
-
-; Dedent on closing brackets
-[
-  ")"
-  "]"
-  "}"
-] @outdent

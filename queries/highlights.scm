@@ -107,6 +107,9 @@
   "??"
 ] @operator
 
+; Function declaration marker
+["@"] @keyword.function
+
 ; Punctuation
 
 [

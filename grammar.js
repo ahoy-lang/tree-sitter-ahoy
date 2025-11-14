@@ -58,11 +58,12 @@ module.exports = grammar({
 		// Import statement
 		import_statement: ($) => seq("import", field("path", $.string)),
 
-		// Function declaration with :: syntax (always multi-line, always needs end)
+		// Function declaration with @ prefix and optional :: syntax (always multi-line, always needs end)
 		function_declaration: ($) =>
 			seq(
+				"@",
 				field("name", $.identifier),
-				"::",
+				optional("::"),
 				"|",
 				optional($.parameter_list),
 				"|",
@@ -91,7 +92,10 @@ module.exports = grammar({
 		parameter_list: ($) => seq($.parameter, repeat(seq(",", $.parameter))),
 
 		parameter: ($) =>
-			seq(field("name", $.identifier), ":", field("type", $.type)),
+			seq(
+				field("name", $.identifier),
+				optional(seq(":", field("type", $.type)))
+			),
 
 		type: ($) =>
 			choice(
@@ -224,10 +228,18 @@ module.exports = grammar({
 			seq(
 				field("targets", $.identifier_list),
 				":",
+				optional(seq(
+					"(",
+					field("types", $.type_list),
+					")",
+					"="
+				)),
 				field("values", $.expression_list),
 			),
 
 		identifier_list: ($) => seq($.identifier, repeat1(seq(",", $.identifier))),
+
+		type_list: ($) => seq($.type, repeat1(seq(",", $.type))),
 
 		expression_list: ($) => seq($.expression, repeat1(seq(",", $.expression))),
 
@@ -331,7 +343,7 @@ module.exports = grammar({
 			seq(
 				"switch",
 				field("value", $.expression),
-				choice("then", "on", ":"),
+				":",
 				field("cases", $.switch_body),
 			),
 
@@ -346,23 +358,29 @@ module.exports = grammar({
 			),
 
 		case_statement: ($) =>
-			seq(
-				field(
-					"pattern",
+			prec.right(
+				seq(
 					choice(
-						$.expression,
-						"_",
-						// Multiple cases: 'A','B'
-						seq($.expression, repeat1(seq(",", $.expression))),
+						seq(
+							"on",
+							field(
+								"pattern",
+								choice(
+									$.expression,
+									// Multiple cases: 'A','B'
+									seq($.expression, repeat1(seq(",", $.expression))),
+								),
+							),
+						),
+						field("pattern", "_"),
 					),
-				),
-				":",
-				field(
-					"body",
-					choice(
-						$.call_expression,
-						$.method_call,
-						seq(repeat1(choice(";", "\n")), repeat1($._statement)),
+					":",
+					field(
+						"body",
+						choice(
+							$.expression,
+							seq(repeat1(choice(";", "\n")), repeat1($._statement)),
+						),
 					),
 				),
 			),
