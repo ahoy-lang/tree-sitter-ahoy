@@ -40,6 +40,8 @@ module.exports = grammar({
 				$.constant_declaration,
 				$.enum_declaration,
 				$.struct_declaration,
+				$.alias_declaration,
+				$.union_declaration,
 				$.tuple_assignment,
 				$.variable_declaration,
 				$.if_statement,
@@ -221,6 +223,24 @@ module.exports = grammar({
 				seq(field("value", $.number), field("name", $.identifier)),
 				// Without value: ten
 				field("name", $.identifier),
+			),
+
+		// Alias declaration
+		alias_declaration: ($) =>
+			seq(
+				"alias",
+				field("name", $.identifier),
+				":",
+				field("target_type", $.type),
+			),
+
+		// Union declaration
+		union_declaration: ($) =>
+			seq(
+				"union",
+				field("name", $.identifier),
+				":",
+				field("types", $.type_list),
 			),
 
 		// Tuple assignment (multiple assignment)

@@ -10,6 +10,8 @@
   "import"
   "struct"
   "enum"
+  "alias"
+  "union"
   "program"
   "return"
   "do"

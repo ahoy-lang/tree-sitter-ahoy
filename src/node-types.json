@@ -1,5 +1,31 @@
 [
   {
+    "type": "alias_declaration",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "target_type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "type",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "argument_list",
     "named": true,
     "fields": {},
@@ -215,6 +241,10 @@
             "named": false
           },
           {
+            "type": "alias_declaration",
+            "named": true
+          },
+          {
             "type": "call_expression",
             "named": true
           },
@@ -272,6 +302,10 @@
           },
           {
             "type": "tuple_assignment",
+            "named": true
+          },
+          {
+            "type": "union_declaration",
             "named": true
           },
           {
@@ -613,6 +647,10 @@
       "required": false,
       "types": [
         {
+          "type": "alias_declaration",
+          "named": true
+        },
+        {
           "type": "call_expression",
           "named": true
         },
@@ -666,6 +704,10 @@
         },
         {
           "type": "tuple_assignment",
+          "named": true
+        },
+        {
+          "type": "union_declaration",
           "named": true
         },
         {
@@ -749,6 +791,10 @@
       "required": true,
       "types": [
         {
+          "type": "alias_declaration",
+          "named": true
+        },
+        {
           "type": "call_expression",
           "named": true
         },
@@ -802,6 +848,10 @@
         },
         {
           "type": "tuple_assignment",
+          "named": true
+        },
+        {
+          "type": "union_declaration",
           "named": true
         },
         {
@@ -975,6 +1025,10 @@
       "required": true,
       "types": [
         {
+          "type": "alias_declaration",
+          "named": true
+        },
+        {
           "type": "call_expression",
           "named": true
         },
@@ -1028,6 +1082,10 @@
         },
         {
           "type": "tuple_assignment",
+          "named": true
+        },
+        {
+          "type": "union_declaration",
           "named": true
         },
         {
@@ -1497,6 +1555,10 @@
       "required": false,
       "types": [
         {
+          "type": "alias_declaration",
+          "named": true
+        },
+        {
           "type": "call_expression",
           "named": true
         },
@@ -1554,6 +1616,10 @@
         },
         {
           "type": "tuple_assignment",
+          "named": true
+        },
+        {
+          "type": "union_declaration",
           "named": true
         },
         {
@@ -1909,6 +1975,32 @@
     }
   },
   {
+    "type": "union_declaration",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "types": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "type_list",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "variable_declaration",
     "named": true,
     "fields": {
@@ -1942,6 +2034,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "alias_declaration",
+          "named": true
+        },
         {
           "type": "call_expression",
           "named": true
@@ -1996,6 +2092,10 @@
         },
         {
           "type": "tuple_assignment",
+          "named": true
+        },
+        {
+          "type": "union_declaration",
           "named": true
         },
         {
@@ -2129,6 +2229,10 @@
   },
   {
     "type": "_",
+    "named": false
+  },
+  {
+    "type": "alias",
     "named": false
   },
   {
@@ -2298,6 +2402,10 @@
   },
   {
     "type": "type",
+    "named": false
+  },
+  {
+    "type": "union",
     "named": false
   },
   {
