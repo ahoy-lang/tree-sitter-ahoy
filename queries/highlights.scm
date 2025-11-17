@@ -21,6 +21,8 @@
   "on"
   "halt"
   "next"
+  "union"
+  "alias"
 ] @keyword
 
 ; Control flow keywords

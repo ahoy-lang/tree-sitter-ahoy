@@ -10,7 +10,7 @@
 ("loop" @open "$" @close)
 ("switch" @open "$" @close)
 ("when" @open "$" @close)
-("::|" @open "$" @close)
+("@" @open "$" @close)
 
 ; Angle brackets for generics (if needed)
 ; ("<" @open ">" @close)
