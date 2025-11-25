@@ -3417,7 +3417,7 @@
       "members": [
         {
           "type": "STRING",
-          "value": "<"
+          "value": "{"
         },
         {
           "type": "CHOICE",
@@ -3435,8 +3435,16 @@
                     "type": "SEQ",
                     "members": [
                       {
-                        "type": "STRING",
-                        "value": ","
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": ","
+                          },
+                          {
+                            "type": "BLANK"
+                          }
+                        ]
                       },
                       {
                         "type": "SYMBOL",
@@ -3453,8 +3461,20 @@
           ]
         },
         {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": ","
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
           "type": "STRING",
-          "value": ">"
+          "value": "}"
         }
       ]
     },
@@ -3471,7 +3491,7 @@
         },
         {
           "type": "STRING",
-          "value": "<"
+          "value": "{"
         },
         {
           "type": "CHOICE",
@@ -3489,8 +3509,16 @@
                     "type": "SEQ",
                     "members": [
                       {
-                        "type": "STRING",
-                        "value": ","
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": ","
+                          },
+                          {
+                            "type": "BLANK"
+                          }
+                        ]
                       },
                       {
                         "type": "SYMBOL",
@@ -3507,8 +3535,20 @@
           ]
         },
         {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": ","
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
           "type": "STRING",
-          "value": ">"
+          "value": "}"
         }
       ]
     },
@@ -3694,6 +3734,10 @@
     ],
     [
       "struct_field_multiline"
+    ],
+    [
+      "dict_literal",
+      "object_literal"
     ]
   ],
   "precedences": [],

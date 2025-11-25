@@ -1,0 +1,18 @@
+struct player:
+  name: string
+  age: int
+$
+
+enum Suit:
+  hearts
+  diamonds
+$
+
+@ calculate_score |points:int| int:
+  return points * 2
+$
+
+@ main ||:
+  p: player{name: "Alice", age: 30}
+  print|"Hello"|
+$

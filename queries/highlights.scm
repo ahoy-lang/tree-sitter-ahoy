@@ -145,6 +145,10 @@
 (typed_object_literal
   type_name: (identifier) @type)
 
+; Object literal properties
+(object_pair
+  key: (identifier) @property)
+
 ; Comments
 
 (comment) @comment

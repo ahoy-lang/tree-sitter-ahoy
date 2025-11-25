@@ -13,6 +13,7 @@ module.exports = grammar({
 		[$.function_body],
 		[$.case_statement],
 		[$.struct_field_multiline],
+		[$.dict_literal, $.object_literal],
 	],
 
 	rules: {
@@ -765,20 +766,23 @@ module.exports = grammar({
 			seq("{", optional(seq($.dict_pair, repeat(seq(",", $.dict_pair)))), "}"),
 
 		// Object literal with <>
+		// Object literal with {} - object{key: value, key2: value2}
 		object_literal: ($) =>
 			seq(
-				"<",
-				optional(seq($.object_pair, repeat(seq(",", $.object_pair)))),
-				">",
+				"{",
+				optional(seq($.object_pair, repeat(seq(optional(","), $.object_pair)))),
+				optional(","),
+				"}",
 			),
 
-		// Typed object literal: rectangle<x: 1, y: 2>
+		// Typed object literal: rectangle{x: 1, y: 2}
 		typed_object_literal: ($) =>
 			seq(
 				field("type_name", $.identifier),
-				"<",
-				optional(seq($.object_pair, repeat(seq(",", $.object_pair)))),
-				">",
+				"{",
+				optional(seq($.object_pair, repeat(seq(optional(","), $.object_pair)))),
+				optional(","),
+				"}",
 			),
 
 		object_pair: ($) =>
