@@ -3,19 +3,16 @@
 
 ; Functions - show @ prefix and return type
 (function_declaration
-  "@"
+  ("@" @context)
   name: (identifier) @name
   "|"
   "|"
   return_type: (return_types) @context) @item
 
-(function_declaration
-  "@"
-  name: (identifier) @name) @item
 
 ; Structs
 (struct_declaration
-  "struct"
+  ("struct" @context)
   name: (identifier) @name) @item
 
 ; Struct fields - show with type (pattern: name: type)
@@ -31,7 +28,7 @@
 
 ; Enums
 (enum_declaration
-  "enum"
+	("enum" @context)
   name: (identifier) @name) @item
 
 ; Enum members - show with value when present
