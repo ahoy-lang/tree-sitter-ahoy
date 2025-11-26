@@ -1,76 +1,62 @@
 ; Ahoy Language Outline Configuration
-; ====================================
-; This file defines how code structure appears in the outline panel.
-;
-; Current features:
-; - Functions show with @ prefix
-; - Struct fields show with type annotation (e.g., "x: int")
-; - Enum members show values when present (e.g., "RED: 255")
-;
-; Limitations (would require LSP integration):
-; - Variable types are inferred and not in the syntax tree
-; - Enum types (int vs string) are not explicitly declared
-; - Function return types shown when explicitly declared
-;
-; To add type information for variables and constants, the LSP would need
-; to be enhanced to provide type information to the outline view.
+; Based on Zed outline syntax patterns
 
-; Functions - prefix with @
+; Functions - show @ prefix and return type
 (function_declaration
+  "@"
   name: (identifier) @name
-  return_type: (return_types) @context.extra) @item
-(#set! item.context_prefix "@")
+  "|"
+  "|"
+  return_type: (return_types) @context) @item
 
 (function_declaration
+  "@"
   name: (identifier) @name) @item
-(#set! item.context_prefix "@")
 
-; Structs - show struct keyword
+; Structs
 (struct_declaration
+  "struct"
   name: (identifier) @name) @item
 
-; Struct fields - show with type suffix using : separator
+; Struct fields - show with type (pattern: name: type)
 (struct_field_oneline
   name: (identifier) @name
-  type: (type) @context.extra) @item
-(#set! item.context_separator ": ")
+  ":"
+  type: (type) @context) @item
 
 (struct_field_multiline
   name: (identifier) @name
-  type: (type) @context.extra) @item
-(#set! item.context_separator ": ")
+  ":"
+  type: (type) @context) @item
 
-; Enums - try to infer type from first member
+; Enums
 (enum_declaration
+  "enum"
   name: (identifier) @name) @item
 
-; Enum members - show value if present
+; Enum members - show with value when present
 (enum_member
-  value: (number) @context.extra
+  value: (number) @context
   name: (identifier) @name) @item
-(#set! item.context_separator ": ")
 
 (enum_member
   name: (identifier) @name) @item
 
-; Variables - show type when explicitly typed (x:int= 5)
+; Variables with explicit type (x:int= 5)
 (variable_declaration
   name: (identifier) @name
-  type: (type) @context.extra) @item
-(#set! item.context_separator ": ")
+  ":"
+  type: (type) @context) @item
 
-; Variables with typed object literal (x: Card{...})
+; Variables with struct instantiation (x: Card{...})
 (variable_declaration
   name: (identifier) @name
+  ":"
   value: (expression
     (typed_object_literal
-      type_name: (identifier) @context.extra))) @item
-(#set! item.context_separator ": ")
+      type_name: (identifier) @context))) @item
 
-; Variables without explicit type
-(variable_declaration
-  name: (identifier) @name) @item
-
-; Constants - show inferred type would require LSP integration
+; Constants
 (constant_declaration
-  name: (identifier) @name) @item
+  name: (identifier) @name
+  "::") @item
