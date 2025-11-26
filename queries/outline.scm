@@ -1,12 +1,13 @@
-; Functions - show with @ prefix
+; Functions - prefix with @
 (function_declaration
   name: (identifier) @name) @item
+(#set! item.context_prefix "@")
 
 ; Structs
 (struct_declaration
   name: (identifier) @name) @item
 
-; Struct fields (both oneline and multiline)
+; Struct fields - show with type suffix
 (struct_field_oneline
   name: (identifier) @name
   type: (type) @context.extra) @item
@@ -19,7 +20,11 @@
 (enum_declaration
   name: (identifier) @name) @item
 
-; Enum members
+; Enum members - show value if present
+(enum_member
+  value: (number) @context.extra
+  name: (identifier) @name) @item
+
 (enum_member
   name: (identifier) @name) @item
 
