@@ -1,6 +1,5 @@
 ; Scopes
 [
-  (block)
   (function_declaration)
   (if_statement)
   (loop_statement)
@@ -33,5 +32,8 @@
 (parameter 
   name: (identifier) @definition.parameter)
 
-(struct_field 
+(struct_field_oneline
+  name: (identifier) @definition.field)
+
+(struct_field_multiline
   name: (identifier) @definition.field)

@@ -53,7 +53,21 @@
 (enum_member
   name: (identifier) @name) @item
 
-; Variables - show inferred type would require LSP integration
+; Variables - show type when explicitly typed (x:int= 5)
+(variable_declaration
+  name: (identifier) @name
+  type: (type) @context.extra) @item
+(#set! item.context_separator ": ")
+
+; Variables with typed object literal (x: Card{...})
+(variable_declaration
+  name: (identifier) @name
+  value: (expression
+    (typed_object_literal
+      type_name: (identifier) @context.extra))) @item
+(#set! item.context_separator ": ")
+
+; Variables without explicit type
 (variable_declaration
   name: (identifier) @name) @item
 

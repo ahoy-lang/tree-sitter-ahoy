@@ -114,7 +114,18 @@ module.exports = grammar({
 
 		// Variable declaration
 		variable_declaration: ($) =>
-			seq(field("name", $.identifier), ":", field("value", $.expression)),
+			choice(
+				// Typed variable: x:int= 5
+				seq(
+					field("name", $.identifier),
+					":",
+					field("type", $.type),
+					"=",
+					field("value", $.expression)
+				),
+				// Inferred type: x: 5
+				seq(field("name", $.identifier), ":", field("value", $.expression))
+			),
 
 		// Constant declaration
 		constant_declaration: ($) =>

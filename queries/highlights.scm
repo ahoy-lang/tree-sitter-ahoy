@@ -19,14 +19,11 @@
   "till"
   "in"
   "on"
-  "halt"
-  "next"
-  "union"
-  "alias"
 ] @keyword
 
-; Control flow keywords
-; Note: "halt" and "next" are anonymous tokens in the grammar, cannot be highlighted
+; Control flow statement keywords
+(halt_statement) @keyword
+(next_statement) @keyword
 
 ; Function calls
 
@@ -82,6 +79,9 @@
 
 (enum_declaration
   name: (identifier) @type)
+
+(enum_member
+  name: (identifier) @constant)
 
 (type) @type
 
@@ -148,6 +148,11 @@
 ; Object literal properties
 (object_pair
   key: (identifier) @property)
+
+; Member access - highlight both enum name and member
+(member_access
+  object: (identifier) @type
+  member: (identifier) @constant)
 
 ; Comments
 
