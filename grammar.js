@@ -178,9 +178,10 @@ module.exports = grammar({
 
 		struct_field_multiline: ($) =>
 			choice(
-				// Regular field with optional default: x:int or 10 x:int
+				// Regular field with optional default and optional static (#) prefix: x:int or 10 x:int or #x:int
 				seq(
 					optional(seq(field("default", $.expression))),
+					optional("#"), // Static property prefix
 					field("name", $.identifier),
 					":",
 					field("type", $.type),
@@ -269,7 +270,10 @@ module.exports = grammar({
 				field("values", $.expression_list),
 			),
 
-		identifier_list: ($) => seq($.identifier, repeat1(seq(",", $.identifier))),
+		// Identifier or underscore (for discarding values in tuple assignments)
+		identifier_or_discard: ($) => choice($.identifier, "_"),
+
+		identifier_list: ($) => seq($.identifier_or_discard, repeat1(seq(",", $.identifier_or_discard))),
 
 		type_list: ($) => seq($.type, repeat1(seq(",", $.type))),
 
@@ -609,6 +613,7 @@ module.exports = grammar({
 				$.identifier,
 				$.number,
 				$.string,
+				$.raw_string,
 				$.char,
 				$.boolean,
 				$.parenthesized_expression,
@@ -678,12 +683,21 @@ module.exports = grammar({
 						field("right", $.expression),
 					),
 				),
+				// Power/Exponentiation (right-associative)
+				prec.right(
+					6,
+					seq(
+						field("left", $.expression),
+						field("operator", choice("**", "pow")),
+						field("right", $.expression),
+					),
+				),
 			),
 
 		// Unary expressions
 		unary_expression: ($) =>
 			prec.right(
-				6,
+				7,
 				seq(
 					field("operator", choice("not", "-")),
 					field("operand", $.expression),
@@ -810,11 +824,14 @@ module.exports = grammar({
 
 		number: ($) =>
 			choice(
-				/\d+\.\d+/, // float
-				/\d+/, // int
+				/\d[\d_]*\.\d[\d_]*/, // float with underscores (e.g., 1_000.50)
+				/\d[\d_]*/, // int with underscores (e.g., 1_000_000)
 			),
 
 		string: ($) => token(seq('"', repeat(choice(/[^"\\]/, /\\./)), '"')),
+
+		// Raw string (backtick) - preserves newlines, no escape sequences
+		raw_string: ($) => token(seq('`', /[^`]*/, '`')),
 
 		char: ($) => token(seq("'", choice(/[^'\\]/, /\\./), "'")),
 

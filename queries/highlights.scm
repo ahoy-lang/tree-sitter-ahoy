@@ -19,6 +19,7 @@
   "till"
   "in"
   "on"
+  "type"
 ] @keyword
 
 ; Control flow statement keywords
@@ -137,6 +138,7 @@
 ; Literals
 
 (string) @string
+(raw_string) @string
 (char) @string.special
 (number) @number
 (boolean) @constant.builtin

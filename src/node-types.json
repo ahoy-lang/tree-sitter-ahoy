@@ -112,6 +112,10 @@
             "named": false
           },
           {
+            "type": "**",
+            "named": false
+          },
+          {
             "type": "+",
             "named": false
           },
@@ -173,6 +177,10 @@
           },
           {
             "type": "plus",
+            "named": false
+          },
+          {
+            "type": "pow",
             "named": false
           },
           {
@@ -586,6 +594,10 @@
           "named": true
         },
         {
+          "type": "raw_string",
+          "named": true
+        },
+        {
           "type": "string",
           "named": true
         },
@@ -774,6 +786,21 @@
     "children": {
       "multiple": true,
       "required": true,
+      "types": [
+        {
+          "type": "identifier_or_discard",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "identifier_or_discard",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
       "types": [
         {
           "type": "identifier",
@@ -2150,6 +2177,10 @@
     "named": false
   },
   {
+    "type": "#",
+    "named": false
+  },
+  {
     "type": "$",
     "named": false
   },
@@ -2167,6 +2198,10 @@
   },
   {
     "type": "*",
+    "named": false
+  },
+  {
+    "type": "**",
     "named": false
   },
   {
@@ -2367,8 +2402,16 @@
     "named": false
   },
   {
+    "type": "pow",
+    "named": false
+  },
+  {
     "type": "program",
     "named": false
+  },
+  {
+    "type": "raw_string",
+    "named": true
   },
   {
     "type": "return",
@@ -2376,11 +2419,11 @@
   },
   {
     "type": "string",
-    "named": true
+    "named": false
   },
   {
     "type": "string",
-    "named": false
+    "named": true
   },
   {
     "type": "struct",
