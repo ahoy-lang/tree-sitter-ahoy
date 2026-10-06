@@ -2792,8 +2792,12 @@
           "name": "object_literal"
         },
         {
-          "type": "SYMBOL",
-          "name": "identifier"
+          "type": "PREC",
+          "value": 9,
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
         },
         {
           "type": "SYMBOL",
@@ -2802,6 +2806,10 @@
         {
           "type": "SYMBOL",
           "name": "string"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "f_string"
         },
         {
           "type": "SYMBOL",
@@ -3799,6 +3807,30 @@
             "value": "`"
           }
         ]
+      }
+    },
+    "f_string": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 10,
+        "content": {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "f\""
+            },
+            {
+              "type": "PATTERN",
+              "value": "([^\"\\\\]|\\\\.)*"
+            },
+            {
+              "type": "STRING",
+              "value": "\""
+            }
+          ]
+        }
       }
     },
     "char": {

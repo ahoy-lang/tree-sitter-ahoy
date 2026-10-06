@@ -610,9 +610,14 @@ module.exports = grammar({
 				$.dict_literal,
 				$.typed_object_literal,
 				$.object_literal,
-				$.identifier,
+				// An identifier used as a call argument (print|x|) must reduce to an
+				// expression; without the precedence it shifted the closing pipe as
+				// the start of a nested call (x|...|) and failed at the end of the
+				// statement. Nested calls are not valid Ahoy anyway.
+				prec(9, $.identifier),
 				$.number,
 				$.string,
+				$.f_string,
 				$.raw_string,
 				$.char,
 				$.boolean,
@@ -832,6 +837,10 @@ module.exports = grammar({
 
 		// Raw string (backtick) - preserves newlines, no escape sequences
 		raw_string: ($) => token(seq('`', /[^`]*/, '`')),
+
+		// f"text {expr}" - interpolation is kept inside the token. The compiler
+		// parses it; for highlighting the whole literal is a string.
+		f_string: ($) => token(prec(10, seq('f"', /([^"\\]|\\.)*/, '"'))),
 
 		char: ($) => token(seq("'", choice(/[^'\\]/, /\\./), "'")),
 

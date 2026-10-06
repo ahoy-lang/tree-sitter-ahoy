@@ -570,6 +570,10 @@
           "named": true
         },
         {
+          "type": "f_string",
+          "named": true
+        },
+        {
           "type": "identifier",
           "named": true
         },
@@ -2326,6 +2330,10 @@
     "named": false
   },
   {
+    "type": "f_string",
+    "named": true
+  },
+  {
     "type": "false",
     "named": false
   },
@@ -2419,11 +2427,11 @@
   },
   {
     "type": "string",
-    "named": false
+    "named": true
   },
   {
     "type": "string",
-    "named": true
+    "named": false
   },
   {
     "type": "struct",
