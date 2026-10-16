@@ -249,31 +249,7 @@
             "named": false
           },
           {
-            "type": "alias_declaration",
-            "named": true
-          },
-          {
-            "type": "call_expression",
-            "named": true
-          },
-          {
-            "type": "constant_declaration",
-            "named": true
-          },
-          {
-            "type": "enum_declaration",
-            "named": true
-          },
-          {
             "type": "expression",
-            "named": true
-          },
-          {
-            "type": "function_declaration",
-            "named": true
-          },
-          {
-            "type": "halt_statement",
             "named": true
           },
           {
@@ -281,19 +257,7 @@
             "named": true
           },
           {
-            "type": "import_statement",
-            "named": true
-          },
-          {
             "type": "loop_statement",
-            "named": true
-          },
-          {
-            "type": "method_call",
-            "named": true
-          },
-          {
-            "type": "next_statement",
             "named": true
           },
           {
@@ -301,27 +265,7 @@
             "named": true
           },
           {
-            "type": "struct_declaration",
-            "named": true
-          },
-          {
             "type": "switch_statement",
-            "named": true
-          },
-          {
-            "type": "tuple_assignment",
-            "named": true
-          },
-          {
-            "type": "union_declaration",
-            "named": true
-          },
-          {
-            "type": "variable_declaration",
-            "named": true
-          },
-          {
-            "type": "when_statement",
             "named": true
           }
         ]
@@ -578,6 +522,10 @@
           "named": true
         },
         {
+          "type": "is_list",
+          "named": true
+        },
+        {
           "type": "member_access",
           "named": true
         },
@@ -751,12 +699,36 @@
           }
         ]
       },
+      "method_name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
       "name": {
         "multiple": false,
         "required": true,
         "types": [
           {
+            "type": ".",
+            "named": false
+          },
+          {
             "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "receiver": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "method_receiver",
             "named": true
           }
         ]
@@ -767,6 +739,16 @@
         "types": [
           {
             "type": "return_types",
+            "named": true
+          }
+        ]
+      },
+      "type_name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
             "named": true
           }
         ]
@@ -1041,6 +1023,32 @@
         "types": [
           {
             "type": "string",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "is_list",
+    "named": true,
+    "fields": {
+      "subject": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "expression",
             "named": true
           }
         ]
@@ -1425,6 +1433,42 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "method_receiver",
+    "named": true,
+    "fields": {
+      "receiver_element": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "receiver_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "receiver_type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -2427,11 +2471,11 @@
   },
   {
     "type": "string",
-    "named": true
+    "named": false
   },
   {
     "type": "string",
-    "named": false
+    "named": true
   },
   {
     "type": "struct",

@@ -14,6 +14,10 @@ module.exports = grammar({
 		[$.case_statement],
 		[$.struct_field_multiline],
 		[$.dict_literal, $.object_literal],
+		// `x is A, b ?? c : d` - the compiler reads the list first and then the
+		// ternary (`(x is A, b) ?? c : d`), so the ambiguity is declared rather
+		// than resolved by precedence.
+		[$.ternary_expression, $.is_list],
 	],
 
 	rules: {
@@ -61,11 +65,17 @@ module.exports = grammar({
 		// Import statement
 		import_statement: ($) => seq("import", field("path", $.string)),
 
-		// Function declaration with @ prefix and optional :: syntax (always multi-line, always needs end)
+		// Function declaration with @ prefix and optional :: syntax (always multi-line, always needs end).
+		// Go-style receivers (@ (recv Type) name) and associated functions
+		// (@ Type.name) share the shape.
 		function_declaration: ($) =>
 			seq(
 				"@",
-				field("name", $.identifier),
+				optional(field("receiver", $.method_receiver)),
+				field("name", choice(
+					$.identifier,
+					seq(field("type_name", $.identifier), ".", field("method_name", $.identifier)),
+				)),
 				optional("::"),
 				"|",
 				optional($.parameter_list),
@@ -73,6 +83,17 @@ module.exports = grammar({
 				optional(field("return_type", $.return_types)),
 				":",
 				field("body", $.function_body),
+			),
+
+		// Go-style method receiver: (recv Type), where Type is a plain name
+		// or a one-level array[Element] shape (array[Box] receivers).
+		method_receiver: ($) =>
+			seq(
+				"(",
+				field("receiver_name", $.identifier),
+				field("receiver_type", $.identifier),
+				optional(seq("[", field("receiver_element", $.identifier), "]")),
+				")",
 			),
 
 		function_body: ($) =>
@@ -387,8 +408,10 @@ module.exports = grammar({
 			prec.right(
 				seq(
 					repeat(choice(";", "\n")),
-					repeat1($.case_statement),
-					repeat(choice(";", "\n")),
+					// Separators live with each case (not just before `$`), so a
+					// bare-expression body ends cleanly at the newline and the
+					// next `on` starts a new case with no `;` needed.
+					repeat1(seq($.case_statement, repeat(choice(";", "\n")))),
 					"$",
 				),
 			),
@@ -415,7 +438,20 @@ module.exports = grammar({
 						"body",
 						choice(
 							$.expression,
-							seq(repeat1(choice(";", "\n")), repeat1($._statement)),
+							// Single-line statement bodies the compiler takes with no
+							// leading separator (`on 1: return "x"`). These keywords
+							// cannot start an expression, so there is no ambiguity
+							// with the expression branch. A trailing `;` (the
+							// user's habit) is consumed by the switch body.
+							seq(
+								choice(
+									$.return_statement,
+									$.if_statement,
+									$.switch_statement,
+									$.loop_statement,
+								),
+								repeat(choice(";", "\n")),
+							),
 						),
 					),
 				),
@@ -600,6 +636,7 @@ module.exports = grammar({
 			choice(
 				$.ternary_expression,
 				$.binary_expression,
+				$.is_list,
 				$.unary_expression,
 				$.call_expression,
 				$.method_call,
@@ -634,6 +671,24 @@ module.exports = grammar({
 					field("consequence", $.expression),
 					":",
 					field("alternative", $.expression),
+				),
+			),
+
+		// Comma sugar for repeated comparisons against the same subject:
+		//   x is A, B, C      (any-of)
+		//   x is not A, B, C  (none-of)
+		// Requires at least one comma so plain `x is y` keeps parsing as a
+		// binary expression. Inside array/object/dict literals the compiler
+		// treats commas as separators, so the list rule does not apply there
+		// (tree-sitter still matches it; highlighting only).
+		is_list: ($) =>
+			prec.left(
+				3,
+				seq(
+					field("subject", $.expression),
+					choice(seq("is", "not"), "is"),
+					field("value", $.expression),
+					repeat1(seq(",", field("value", $.expression))),
 				),
 			),
 
