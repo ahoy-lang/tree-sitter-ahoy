@@ -3,7 +3,7 @@
   "if"
   "then"
   "else"
-  "anif"
+  "elif"
   "loop"
   "switch"
   "when"
@@ -12,6 +12,7 @@
   "enum"
   "alias"
   "union"
+  "distinct"
   "program"
   "return"
   "do"
@@ -20,21 +21,45 @@
   "in"
   "on"
   "type"
+  "fn"
+  "is"
+  "not"
+  "and"
+  "or"
+  "in"
+  "while"
+  "until"
+  "defer"
+  "assert"
 ] @keyword
 
 ; Control flow statement keywords
 (halt_statement) @keyword
 (next_statement) @keyword
+(defer_statement) @keyword
+(assert_statement) @keyword
 
 ; Function calls
 
 (call_expression
   function: (identifier) @function)
 
+; Method calls
+
+(method_call
+  method: (identifier) @function)
+
 ; Function definitions
 
 (function_declaration
   name: (identifier) @function)
+
+; A method: the receiver type reads as a type, the method as a function
+(method_receiver
+  receiver_type: (identifier) @type)
+
+(function_declaration
+  type_name: (identifier) @type)
 
 ; Built-in functions
 
@@ -49,11 +74,16 @@
 [
   "int"
   "float"
+  "double"
   "string"
+  "char"
   "bool"
   "dict"
-  "vector2"
-  "color"
+  "array"
+  "buffer"
+  "any"
+  "infer"
+  "void"
 ] @type.builtin
 
 ; Variables
@@ -72,10 +102,7 @@
 (struct_declaration
   name: (identifier) @type)
 
-(struct_field_oneline
-  name: (identifier) @property)
-
-(struct_field_multiline
+(struct_field
   name: (identifier) @property)
 
 (enum_declaration
@@ -84,22 +111,23 @@
 (enum_member
   name: (identifier) @constant)
 
-(type) @type
+(distinct_declaration
+  name: (identifier) @type)
+
+(union_declaration
+  name: (identifier) @type)
+
+(alias_declaration
+  name: (identifier) @type)
 
 ; Operators
 
 [
-  "plus"
-  "minus"
-  "times"
-  "div"
-  "mod"
-  "greater_than"
-  "less_than"
   "is"
   "and"
   "or"
   "not"
+  "in"
   "+"
   "-"
   "*"
@@ -110,6 +138,9 @@
   ">="
   "<="
   "??"
+  "="
+  "->"
+  "=>"
 ] @operator
 
 ; Function declaration marker
@@ -119,7 +150,6 @@
 
 [
   ":"
-  ";"
   ","
   "|"
   "$"

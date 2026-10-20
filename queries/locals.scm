@@ -32,8 +32,5 @@
 (parameter 
   name: (identifier) @definition.parameter)
 
-(struct_field_oneline
-  name: (identifier) @definition.field)
-
-(struct_field_multiline
+(struct_field
   name: (identifier) @definition.field)

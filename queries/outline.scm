@@ -16,12 +16,7 @@
   name: (identifier) @name) @item
 
 ; Struct fields - show with type (pattern: name: type)
-(struct_field_oneline
-  name: (identifier) @name
-  ":"
-  type: (type) @context) @item
-
-(struct_field_multiline
+(struct_field
   name: (identifier) @name
   ":"
   type: (type) @context) @item

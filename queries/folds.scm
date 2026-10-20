@@ -6,6 +6,11 @@
   (case_statement)
   (enum_declaration)
   (struct_declaration)
-  (block)
+  (function_body)
+  (if_body)
+  (loop_body)
+  (when_body)
+  (switch_body)
+  (struct_body)
   (when_statement)
 ] @fold

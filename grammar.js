@@ -31,6 +31,13 @@ module.exports = grammar({
 		// `i64(3)` reads as a cast or as an identifier followed by a
 		// parenthesised expression.
 		[$.cast_expression, $.parenthesized_expression],
+		// `a, b :(float, float) = f||` - the types in brackets or the
+		// values in a parenthesised expression.
+		[$.tuple_assignment, $.parenthesized_expression],
+		// `(Rectangle, Rectangle)` - the types of a typed tuple assignment or
+		// a lambda's parameter list. The `=` after the bracket tells them
+		// apart, so both are explored.
+		[$.type, $.lambda_param],
 	],
 
 	rules: {
@@ -259,6 +266,10 @@ module.exports = grammar({
 						field("name", $.identifier),
 						":",
 						field("type", $.type),
+						// A component holds another by reference: vis: Point*
+						optional("*"),
+						// A field may carry a default: x: int = 0
+						optional(seq("=", field("default", $.default_value))),
 					),
 					// Nested type - inline fields, no separate end
 					seq(
@@ -270,10 +281,30 @@ module.exports = grammar({
 				),
 			),
 
+		// The default value of a struct field: a number, a string, a bool,
+		// a function reference (&name), or a plain value.
+		default_value: ($) =>
+			choice(
+				seq("-", $.number),
+				$.number,
+				$.string,
+				$.boolean,
+				seq("&", $.identifier),
+				$.identifier,
+				$.member_access,
+				$.array_literal,
+				$.dict_literal,
+				$.object_literal,
+			),
+
 		// Enum declaration (single-line or multi-line)
 		enum_declaration: ($) =>
 			seq(
 				"enum",
+				// The base type is optional: `enum:int NodeKind:` says the
+				// members are ints, `enum NodeKind:` lets the compiler
+				// work it out.
+				optional(seq(":", field("enum_type", $.type))),
 				field("name", $.identifier),
 				":",
 				field("members", $.enum_members),
@@ -327,16 +358,29 @@ module.exports = grammar({
 
 		// Tuple assignment (multiple assignment)
 		tuple_assignment: ($) =>
-			seq(
-				field("targets", $.identifier_list),
-				":",
-				optional(seq(
-					"(",
-					field("types", $.type_list),
-					")",
-					"="
-				)),
-				field("values", $.expression_list),
+			choice(
+				// Typed: `a, b :(float, float) = values`. The types in
+				// brackets look like a lambda's parameter list, so this
+				// form wins on precedence: the `=` after the bracket is
+				// what tells the two apart.
+				prec(
+					3,
+					seq(
+						field("targets", $.identifier_list),
+						":",
+						"(",
+						field("types", $.type_list),
+						")",
+						"=",
+						field("values", $.tuple_values),
+					),
+				),
+				// Plain: `a, b : values`
+				seq(
+					field("targets", $.identifier_list),
+					":",
+					field("values", $.tuple_values),
+				),
 			),
 
 		// Identifier or underscore (for discarding values in tuple assignments)
@@ -344,9 +388,23 @@ module.exports = grammar({
 
 		identifier_list: ($) => seq($.identifier_or_discard, repeat1(seq(",", $.identifier_or_discard))),
 
-		type_list: ($) => seq($.type, repeat1(seq(",", $.type))),
+		// The types of a typed tuple assignment: `(float, float)`. The
+		// precedence keeps the list of types over a lambda's parameter
+		// list - the two look the same until the `=`.
+		type_list: ($) =>
+			prec(
+				12,
+				seq(
+					prec(12, $.type),
+					repeat1(seq(",", prec(12, $.type))),
+				),
+			),
 
 		expression_list: ($) => seq($.expression, repeat1(seq(",", $.expression))),
+
+		// The values of a tuple assignment: one or more of them
+		// (`a, b : g` unpacks a single value, `a, b : 1, 2` two).
+		tuple_values: ($) => seq($.expression, repeat(seq(",", $.expression))),
 
 		// If statement. The compiler requires `$` to close every block, so
 		// the inline and the multi-line form are the same rule.
@@ -424,29 +482,26 @@ module.exports = grammar({
 								),
 							),
 						),
-						field("pattern", "_"),
-					),
-					":",
-					field(
-						"body",
-						choice(
-							$.expression,
-							blank(),
-							// Single-line statement bodies the compiler takes with no
-							// leading separator (`on 1: return "x"`). These keywords
-							// cannot start an expression, so there is no ambiguity
-							// with the expression branch. A trailing `;` (the
-							// user's habit) is consumed by the switch body.
-							seq(
-								choice(
-									$.return_statement,
-									$.if_statement,
-									$.switch_statement,
-									$.loop_statement,
-								),
+						seq(
+							field(
+								"pattern",
+								alias(token(prec(1, "_")), $.identifier_or_discard),
 							),
 						),
 					),
+					":",
+					// The body of a case: the statements under it (a case may
+					// hold many, and a single-line body `on 1: return "x"` is
+					// one statement), closed by `$` - the same shape as a
+					// function body. An empty case is just the `$`.
+					choice(
+						seq(
+							$._statement,
+							repeat($._statement),
+						),
+						"$",
+					),
+					optional("$"),
 				),
 			),
 
@@ -802,15 +857,23 @@ module.exports = grammar({
 				),
 			),
 
-		// Function call
+		// Function call. A call with no arguments is written with a doubled
+		// pipe (`f||`), which is a single token here - the same trick the
+		// method call uses, so the two stay apart.
 		call_expression: ($) =>
 			prec(
 				7,
-				seq(
-					field("function", $.identifier),
-					"|",
-					optional($.argument_list),
-					"|",
+				choice(
+					seq(
+						field("function", $.identifier),
+						"|",
+						optional($.argument_list),
+						"|",
+					),
+					seq(
+						field("function", $.identifier),
+						"||",
+					),
 				),
 			),
 
@@ -819,7 +882,7 @@ module.exports = grammar({
 		// Method call (arr.map|x|, arr.pop||)
 		method_call: ($) =>
 			prec(
-				10,
+				9,
 				choice(
 					seq(
 						field(
