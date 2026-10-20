@@ -24,20 +24,9 @@ module.exports = grammar({
 		// cannot tell them apart with one token of lookahead, so both are
 		// explored and the parse that completes wins.
 		[$.member_access, $.method_call],
-		// `(a, b): a + b` reads as a lambda or as a parenthesised expression
-		// followed by a block; the compiler resolves it by lookahead, so both
-		// are explored here.
-		[$.lambda, $.parenthesized_expression],
-		// `i64(3)` reads as a cast or as an identifier followed by a
-		// parenthesised expression.
-		[$.cast_expression, $.parenthesized_expression],
-		// `a, b :(float, float) = f||` - the types in brackets or the
-		// values in a parenthesised expression.
-		[$.tuple_assignment, $.parenthesized_expression],
-		// `(Rectangle, Rectangle)` - the types of a typed tuple assignment or
-		// a lambda's parameter list. The `=` after the bracket tells them
-		// apart, so both are explored.
-		[$.type, $.lambda_param],
+		// `x: 5` - an assignment with a colon, or a declaration whose type
+		// is missing? The `=` after the type tells them apart.
+		[$.variable_declaration, $.assignment],
 	],
 
 	rules: {
@@ -82,7 +71,19 @@ module.exports = grammar({
 				$.call_expression,
 			),
 
-		comment: ($) => token(prec(1, seq("?", /[^?].*/))),
+		// A comment runs to the end of the line. Ahoy writes them with a
+		// leading `?`; `#` is the other spelling (and what the ahoy
+		// compiler's own files use).
+		comment: ($) =>
+			token(
+				prec(
+					1,
+					choice(
+						seq("?", /[^?].*/),
+						seq("#", /[^#].*/),
+					),
+				),
+			),
 
 		// Import statement
 		import_statement: ($) => seq("import", field("path", $.string)),
@@ -141,9 +142,14 @@ module.exports = grammar({
 				optional(seq(":", field("type", $.type)))
 			),
 
+		// The precedence keeps a list of types (the typed tuple assignment)
+		// over a lambda's parameter list - the two look the same until the
+		// `=` after the bracket.
 		type: ($) =>
-			choice(
-				"int",
+			prec(
+				12,
+				choice(
+					"int",
 				"float",
 				"double",
 				"string",
@@ -158,7 +164,8 @@ module.exports = grammar({
 				$.array_type,
 				$.dict_type,
 				$.buffer_type,
-				$.function_type,
+					$.function_type,
+				),
 			),
 
 		// array[int], array[array[int]]
@@ -233,7 +240,9 @@ module.exports = grammar({
 						$.dict_access,
 					),
 				),
-				"=",
+				// The compiler takes both `=` and `:` as the assignment
+				// sign, so `vals[i]: vals[i] + 1` is an assignment too.
+				choice("=", ":"),
 				field("value", $.expression),
 			),
 

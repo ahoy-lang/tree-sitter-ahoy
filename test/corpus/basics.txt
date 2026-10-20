@@ -5,149 +5,493 @@ Simple variable declarations
 x: 42
 name: "Ahoy"
 active: true
+ratio: 1.5
 
 --------------------------------------------------------------------------------
 
 (source_file
   (variable_declaration
-    name: (identifier)
-    value: (number))
+    (identifier)
+    (expression
+      (number)))
   (variable_declaration
-    name: (identifier)
-    value: (string))
+    (identifier)
+    (expression
+      (string)))
   (variable_declaration
-    name: (identifier)
-    value: (boolean)))
+    (identifier)
+    (expression
+      (boolean)))
+  (variable_declaration
+    (identifier)
+    (expression
+      (number))))
+
+================================================================================
+Typed variable declaration
+================================================================================
+
+x: int = 42
+point: Vector2 = Vector2{x: 1.0, y: 2.0}
+names: array[string] = ["a", "b"]
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    (identifier)
+    (type)
+    (expression
+      (number)))
+  (variable_declaration
+    (identifier)
+    (type
+      (identifier))
+    (expression
+      (typed_object_literal
+        (identifier)
+        (object_pair
+          (identifier)
+          (expression
+            (number)))
+        (object_pair
+          (identifier)
+          (expression
+            (number))))))
+  (variable_declaration
+    (identifier)
+    (type
+      (array_type
+        (type)))
+    (expression
+      (array_literal
+        (expression
+          (string))
+        (expression
+          (string))))))
 
 ================================================================================
 Function declaration
 ================================================================================
 
-func factorial|n int| int then
-    if n <= 1 then
-        return 1
-    else then
-        return n times factorial|n minus 1|
+@ factorial |n:int| int:
+	if n <= 1 then
+		return 1
+	$
+	return n * factorial|n - 1|
+$
 
 --------------------------------------------------------------------------------
 
 (source_file
   (function_declaration
-    name: (identifier)
+    (identifier)
     (parameter_list
       (parameter
-        name: (identifier)
-        type: (type)))
-    return_type: (type)
-    body: (block
+        (identifier)
+        (type)))
+    (return_types
+      (type))
+    (function_body
       (if_statement
-        condition: (binary_expression
-          left: (identifier)
-          operator: (string)
-          right: (number))
-        consequence: (block
+        (expression
+          (binary_expression
+            (expression
+              (identifier))
+            (expression
+              (number))))
+        (if_body
           (return_statement
-            value: (number)))
-        alternative: (block
-          (return_statement
-            value: (binary_expression)))))))
+            (expression_list_or_single
+              (expression
+                (number))))))
+      (return_statement
+        (expression_list_or_single
+          (expression
+            (binary_expression
+              (expression
+                (identifier))
+              (expression
+                (call_expression
+                  (identifier)
+                  (argument_list
+                    (expression
+                      (binary_expression
+                        (expression
+                          (identifier))
+                        (expression
+                          (number))))))))))))))
+
+================================================================================
+A method with a receiver
+================================================================================
+
+@ (n Node) moved |dx:float| Node:
+	n.x = n.x + dx
+	return n
+$
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    (method_receiver
+      (identifier)
+      (identifier))
+    (identifier)
+    (parameter_list
+      (parameter
+        (identifier)
+        (type)))
+    (return_types
+      (type
+        (identifier)))
+    (function_body
+      (assignment
+        (member_access
+          (identifier)
+          (identifier))
+        (expression
+          (binary_expression
+            (expression
+              (member_access
+                (identifier)
+                (identifier)))
+            (expression
+              (identifier)))))
+      (return_statement
+        (expression_list_or_single
+          (expression
+            (identifier)))))))
 
 ================================================================================
 Loop with range
 ================================================================================
 
-loop:0 to 3 then
-    ahoy|"iteration\n"|
+loop i:0 to 3 do
+	print|"iteration"|
+$
 
 --------------------------------------------------------------------------------
 
 (source_file
   (loop_statement
-    start: (number)
-    $: (number)
-    body: (block
-      (expression_statement
-        (call_expression
-          function: (identifier)
-          (argument_list
+    (identifier)
+    (expression
+      (number))
+    (expression
+      (number))
+    (loop_body
+      (call_expression
+        (identifier)
+        (argument_list
+          (expression
             (string)))))))
 
 ================================================================================
 Array operations
 ================================================================================
 
-numbers: <10, 20, 30>
-first: numbers<0>
+numbers: [10, 20, 30]
+first: numbers[0]
+numbers[0] = 5
 
 --------------------------------------------------------------------------------
 
 (source_file
   (variable_declaration
-    name: (identifier)
-    value: (array_literal
-      (number)
-      (number)
-      (number)))
+    (identifier)
+    (expression
+      (array_literal
+        (expression
+          (number))
+        (expression
+          (number))
+        (expression
+          (number)))))
   (variable_declaration
-    name: (identifier)
-    value: (array_access
-      array: (identifier)
-      index: (number))))
+    (identifier)
+    (expression
+      (array_access
+        (identifier)
+        (expression
+          (number)))))
+  (assignment
+    (array_access
+      (identifier)
+      (expression
+        (number)))
+    (expression
+      (number))))
 
 ================================================================================
 Dictionary operations
 ================================================================================
 
-person: {"name":"Alice", "age":30}
-name: person{"name"}
+person: dict<string,string> = <"name": "Alice">
+count: int = 1
 
 --------------------------------------------------------------------------------
 
 (source_file
   (variable_declaration
     name: (identifier)
-    value: (dict_literal
-      (dict_pair
-        key: (string)
-        value: (string))
-      (dict_pair
-        key: (string)
-        value: (number))))
+    type: (type
+      (dict_type
+        (type)
+        (type)))
+    value: (expression
+      (dict_literal
+        (dict_pair
+          key: (string)
+          value: (expression
+            (string))))))
   (variable_declaration
     name: (identifier)
-    value: (dict_access
-      dict: (identifier)
-      key: (string))))
+    type: (type)
+    value: (expression
+      (number))))
 
 ================================================================================
-Word operators
+Calls
 ================================================================================
 
-sum: a plus b
-diff: a minus b
-product: a times b
+print|"hello"|
+count: now||
+total: add|1, 2|
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (call_expression
+    (identifier)
+    (argument_list
+      (expression
+        (string))))
+  (variable_declaration
+    (identifier)
+    (expression
+      (call_expression
+        (identifier))))
+  (variable_declaration
+    (identifier)
+    (expression
+      (call_expression
+        (identifier)
+        (argument_list
+          (expression
+            (number))
+          (expression
+            (number)))))))
+
+================================================================================
+Struct and enum
+================================================================================
+
+struct Point:
+	x: float = 0.0
+	y: float = 0.0
+$
+
+enum:int NodeKind:
+	0 plain
+	1 sprite
+$
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (struct_declaration
+    (identifier)
+    (struct_body
+      (struct_field
+        (identifier)
+        (type)
+        (default_value
+          (number)))
+      (struct_field
+        (identifier)
+        (type)
+        (default_value
+          (number)))))
+  (enum_declaration
+    (type)
+    (identifier)
+    (enum_members
+      (enum_member
+        (number)
+        (identifier))
+      (enum_member
+        (number)
+        (identifier)))))
+
+================================================================================
+Switch statement
+================================================================================
+
+switch kind:
+	on 0:
+		print|"plain"|
+	$
+	on 1:
+		print|"sprite"|
+	$
+$
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (switch_statement
+    value: (expression
+      (identifier))
+    cases: (switch_body
+      (case_statement
+        pattern: (expression
+          (number))
+        (call_expression
+          function: (identifier)
+          (argument_list
+            (expression
+              (string)))))
+      (case_statement
+        pattern: (expression
+          (number))
+        (call_expression
+          function: (identifier)
+          (argument_list
+            (expression
+              (string))))))))
+
+================================================================================
+Tuple assignment
+================================================================================
+
+left, right :(int, int) = swap|1, 2|
+one, two : pair||
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (tuple_assignment
+    (identifier_list
+      (identifier_or_discard
+        (identifier))
+      (identifier_or_discard
+        (identifier)))
+    (type_list
+      (type)
+      (type))
+    (tuple_values
+      (expression
+        (call_expression
+          (identifier)
+          (argument_list
+            (expression
+              (number))
+            (expression
+              (number)))))))
+  (tuple_assignment
+    (identifier_list
+      (identifier_or_discard
+        (identifier))
+      (identifier_or_discard
+        (identifier)))
+    (tuple_values
+      (expression
+        (call_expression
+          (identifier))))))
+
+================================================================================
+Operators
+================================================================================
+
+sum: a + b
+diff: a - b
+product: a * b
+ratio: a / b
+is_set: a is not b
+both: a and b
+either: a or b
+maybe: a ?? b : c
+not_a: not a
 
 --------------------------------------------------------------------------------
 
 (source_file
   (variable_declaration
-    name: (identifier)
-    value: (binary_expression
-      left: (identifier)
-      operator: (string)
-      right: (identifier)))
+    (identifier)
+    (expression
+      (binary_expression
+        (expression
+          (identifier))
+        (expression
+          (identifier)))))
   (variable_declaration
-    name: (identifier)
-    value: (binary_expression
-      left: (identifier)
-      operator: (string)
-      right: (identifier)))
+    (identifier)
+    (expression
+      (binary_expression
+        (expression
+          (identifier))
+        (expression
+          (identifier)))))
   (variable_declaration
-    name: (identifier)
-    value: (binary_expression
-      left: (identifier)
-      operator: (string)
-      right: (identifier))))
+    (identifier)
+    (expression
+      (binary_expression
+        (expression
+          (identifier))
+        (expression
+          (identifier)))))
+  (variable_declaration
+    (identifier)
+    (expression
+      (binary_expression
+        (expression
+          (identifier))
+        (expression
+          (identifier)))))
+  (variable_declaration
+    (identifier)
+    (expression
+      (binary_expression
+        (expression
+          (identifier))
+        (expression
+          (unary_expression
+            (expression
+              (identifier)))))))
+  (variable_declaration
+    (identifier)
+    (expression
+      (binary_expression
+        (expression
+          (identifier))
+        (expression
+          (identifier)))))
+  (variable_declaration
+    (identifier)
+    (expression
+      (binary_expression
+        (expression
+          (identifier))
+        (expression
+          (identifier)))))
+  (variable_declaration
+    (identifier)
+    (expression
+      (ternary_expression
+        (expression
+          (identifier))
+        (expression
+          (identifier))
+        (expression
+          (identifier)))))
+  (variable_declaration
+    (identifier)
+    (expression
+      (unary_expression
+        (expression
+          (identifier))))))
 
 ================================================================================
 Import statement
@@ -159,25 +503,26 @@ import "stdio.h"
 
 (source_file
   (import_statement
-    path: (string)))
+    (string)))
 
 ================================================================================
 When statement
 ================================================================================
 
 when DEBUG then
-    ahoy|"Debug mode\n"|
+	print|"Debug mode"|
+$
 
 --------------------------------------------------------------------------------
 
 (source_file
   (when_statement
-    condition: (identifier)
-    body: (block
-      (expression_statement
-        (call_expression
-          function: (identifier)
-          (argument_list
+    (identifier)
+    (when_body
+      (call_expression
+        (identifier)
+        (argument_list
+          (expression
             (string)))))))
 
 ================================================================================
@@ -185,12 +530,29 @@ Comments
 ================================================================================
 
 ? This is a comment
+# and so is this
 x: 42
 
 --------------------------------------------------------------------------------
 
 (source_file
   (comment)
+  (comment)
   (variable_declaration
-    name: (identifier)
-    value: (number)))
+    (identifier)
+    (expression
+      (number))))
+
+================================================================================
+F strings
+================================================================================
+
+text: f"value {x} and {y + 1}"
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    (identifier)
+    (expression
+      (f_string))))
