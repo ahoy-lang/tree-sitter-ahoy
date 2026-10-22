@@ -332,35 +332,50 @@ Switch statement
 switch kind:
 	on 0:
 		print|"plain"|
-	$
 	on 1:
 		print|"sprite"|
-	$
+		print|"second"|
+	_:
+		print|"other"|
 $
 
 --------------------------------------------------------------------------------
 
 (source_file
   (switch_statement
-    value: (expression
+    (expression
       (identifier))
-    cases: (switch_body
+    (switch_body
       (case_statement
-        pattern: (expression
+        (expression
+          (number))
+        (expression
+          (call_expression
+            (identifier)
+            (argument_list
+              (expression
+                (string))))))
+      (case_statement
+        (expression
           (number))
         (call_expression
-          function: (identifier)
+          (identifier)
+          (argument_list
+            (expression
+              (string))))
+        (call_expression
+          (identifier)
           (argument_list
             (expression
               (string)))))
       (case_statement
-        pattern: (expression
-          (number))
-        (call_expression
-          function: (identifier)
-          (argument_list
-            (expression
-              (string))))))))
+        (identifier_or_discard)
+        (expression
+          (call_expression
+            (identifier)
+            (argument_list
+              (expression
+                (string)))))))))
 
 ================================================================================
 Tuple assignment
@@ -556,3 +571,152 @@ text: f"value {x} and {y + 1}"
     (identifier)
     (expression
       (f_string))))
+
+================================================================================
+Pass-through check
+================================================================================
+
+@ main ||:
+	id: 0
+	if id >= 0 pass else return $
+	print|"kept"|
+$
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    (identifier)
+    (function_body
+      (variable_declaration
+        (identifier)
+        (expression
+          (number)))
+      (if_statement
+        (expression
+          (binary_expression
+            (expression
+              (identifier))
+            (expression
+              (number))))
+        (if_body
+          (return_statement)))
+      (call_expression
+        (identifier)
+        (argument_list
+          (expression
+            (string)))))))
+
+================================================================================
+Guard clause
+================================================================================
+
+@ main ||:
+	id: 0
+	guard id >= 0 else return $
+	print|"kept"|
+$
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    (identifier)
+    (function_body
+      (variable_declaration
+        (identifier)
+        (expression
+          (number)))
+      (if_statement
+        (expression
+          (binary_expression
+            (expression
+              (identifier))
+            (expression
+              (number))))
+        (if_body
+          (return_statement)))
+      (call_expression
+        (identifier)
+        (argument_list
+          (expression
+            (string)))))))
+
+================================================================================
+Switch expression
+================================================================================
+
+@ f |y:int| int:
+	x: int = switch y:
+		on 0: 10
+		on 1: 20
+		_: 30
+	$
+$
+
+@ g |y:int| int:
+	return switch y:
+		on 0: 10
+		_: 30
+	$
+$
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    (identifier)
+    (parameter_list
+      (parameter
+        (identifier)
+        (type)))
+    (return_types
+      (type))
+    (function_body
+      (variable_declaration
+        (identifier)
+        (type)
+        (expression
+          (switch_expression
+            (expression
+              (identifier))
+            (switch_body
+              (case_statement
+                (expression
+                  (number))
+                (expression
+                  (number)))
+              (case_statement
+                (expression
+                  (number))
+                (expression
+                  (number)))
+              (case_statement
+                (identifier_or_discard)
+                (expression
+                  (number)))))))))
+  (function_declaration
+    (identifier)
+    (parameter_list
+      (parameter
+        (identifier)
+        (type)))
+    (return_types
+      (type))
+    (function_body
+      (return_statement
+        (expression_list_or_single
+          (expression
+            (switch_expression
+              (expression
+                (identifier))
+              (switch_body
+                (case_statement
+                  (expression
+                    (number))
+                  (expression
+                    (number)))
+                (case_statement
+                  (identifier_or_discard)
+                  (expression
+                    (number)))))))))))

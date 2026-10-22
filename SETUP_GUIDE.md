@@ -37,7 +37,7 @@ tree-sitter/
 The `grammar.js` file defines all syntactic rules using JavaScript:
 
 - **Keywords**: if, then, else, loop, func, return, when, etc.
-- **Operators**: Word operators (plus, minus, times, div, mod) and symbols (+, -, *, /, %)
+- **Operators**: symbols (+, -, *, /, %, **) and comparisons (<, >, <=, >=, is); word forms removed
 - **Structures**: functions, arrays `<...>`, dictionaries `{...}`, loops, conditionals
 - **Expressions**: binary operations, unary operations, function calls
 - **Literals**: numbers, strings, booleans, characters

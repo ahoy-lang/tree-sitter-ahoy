@@ -44,8 +44,8 @@ Language Support:
   ✅ All loop types (range, while, for-in)
   ✅ Arrays (<1, 2, 3>)
   ✅ Dictionaries ({"key":"value"})
-  ✅ Word operators (plus, minus, times, etc.)
-  ✅ Comparison operators (greater_than, lesser_than)
+  ✅ Symbol arithmetic operators (+, -, *, /, %, **); word forms removed
+  ✅ Comparison operators (<, >, <=, >=); word forms removed
   ✅ Comments (? comment)
   ✅ Imports (import "lib.h")
   ✅ Compile-time conditionals (when)

@@ -27,6 +27,8 @@ module.exports = grammar({
 		// `x: 5` - an assignment with a colon, or a declaration whose type
 		// is missing? The `=` after the type tells them apart.
 		[$.variable_declaration, $.assignment],
+		[$._statement, $.expression],
+		[$.switch_statement, $.switch_expression],
 	],
 
 	rules: {
@@ -393,7 +395,7 @@ module.exports = grammar({
 			),
 
 		// Identifier or underscore (for discarding values in tuple assignments)
-		identifier_or_discard: ($) => choice($.identifier, "_"),
+		identifier_or_discard: ($) => choice($.identifier, $.discard),
 
 		identifier_list: ($) => seq($.identifier_or_discard, repeat1(seq(",", $.identifier_or_discard))),
 
@@ -416,30 +418,51 @@ module.exports = grammar({
 		tuple_values: ($) => seq($.expression, repeat(seq(",", $.expression))),
 
 		// If statement. The compiler requires `$` to close every block, so
-		// the inline and the multi-line form are the same rule.
+		// the inline and the multi-line form are the same rule. `if COND
+		// pass else BODY` is the deprecated pass-through check: an empty
+		// then-arm, exactly `if not COND then BODY`. `guard COND else
+		// BODY` is the canonical form; the `else` must diverge (`return`,
+		// `halt`, `next`), there is no `then` and no `elif`.
 		if_statement: ($) =>
 			prec.right(
-				seq(
-					"if",
-					field("condition", $.expression),
-					"then",
-					field("consequence", $.if_body),
-					repeat(
-						seq(
-							"elif",
-							field("alternative_condition", $.expression),
-							"then",
-							field("alternative", $.if_body),
-						),
+				choice(
+					seq(
+						"guard",
+						field("condition", $.expression),
+						"else",
+						field("alternative", $.if_body),
+						"$",
 					),
-					optional(
-						seq(
-							"else",
-							optional(choice("then", ":")),
-							field("alternative", $.if_body),
-						),
+					seq(
+						"if",
+						field("condition", $.expression),
+						"pass",
+						"else",
+						field("alternative", $.if_body),
+						"$",
 					),
-					"$",
+					seq(
+						"if",
+						field("condition", $.expression),
+						"then",
+						field("consequence", $.if_body),
+						repeat(
+							seq(
+								"elif",
+								field("alternative_condition", $.expression),
+								"then",
+								field("alternative", $.if_body),
+							),
+						),
+						optional(
+							seq(
+								"else",
+								optional(choice("then", ":")),
+								field("alternative", $.if_body),
+							),
+						),
+						"$",
+					),
 				),
 			),
 
@@ -461,6 +484,25 @@ module.exports = grammar({
 
 		// Switch statement (always multi-line, always needs end)
 		switch_statement: ($) =>
+			seq(
+				"switch",
+				field("value", $.expression),
+				":",
+				field("cases", $.switch_body),
+			),
+
+		// A switch used as a value:
+		//
+		//   word: string = switch anchor:
+		//       on 0: "TL"
+		//       _: "TL"
+		//   $
+		//
+		// The compiler parses `switch` as a primary expression. The grammar
+		// needs a separate rule here: reusing switch_statement directly in
+		// `expression` makes the parser prefer the identifier reading of
+		// `switch`, so `on` never becomes a keyword.
+		switch_expression: ($) =>
 			seq(
 				"switch",
 				field("value", $.expression),
@@ -494,23 +536,25 @@ module.exports = grammar({
 						seq(
 							field(
 								"pattern",
-								alias(token(prec(1, "_")), $.identifier_or_discard),
+								alias($.discard, $.identifier_or_discard),
 							),
 						),
 					),
 					":",
-					// The body of a case: the statements under it (a case may
-					// hold many, and a single-line body `on 1: return "x"` is
-					// one statement), closed by `$` - the same shape as a
-					// function body. An empty case is just the `$`.
-					choice(
-						seq(
-							$._statement,
-							repeat($._statement),
+					optional(
+						field(
+							"body",
+							choice(
+								prec.left(
+									seq(
+										$._statement,
+										repeat($._statement),
+									),
+								),
+								$.expression,
+							),
 						),
-						"$",
 					),
-					optional("$"),
 				),
 			),
 
@@ -638,6 +682,7 @@ module.exports = grammar({
 		// Expressions
 		expression: ($) =>
 			choice(
+				$.switch_expression,
 				$.ternary_expression,
 				$.binary_expression,
 				$.is_list,
@@ -1058,7 +1103,11 @@ module.exports = grammar({
 		parenthesized_expression: ($) => seq("(", $.expression, ")"),
 
 		// Primitives
+		// A bare `_` is a discard/default-case marker, not an identifier.
+		// The token precedence makes the lexer pick `discard` over the
+		// otherwise-matching `identifier` for the same one-character text.
 		identifier: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
+		discard: ($) => token(prec(10, "_")),
 
 		number: ($) =>
 			choice(

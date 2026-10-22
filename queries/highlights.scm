@@ -4,6 +4,8 @@
   "then"
   "else"
   "elif"
+  "pass"
+  "guard"
   "loop"
   "switch"
   "when"

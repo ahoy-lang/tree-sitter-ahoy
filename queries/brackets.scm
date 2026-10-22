@@ -7,6 +7,7 @@
 
 ; Block terminators - keywords that start blocks paired with $
 ("if" @open "$" @close)
+("guard" @open "$" @close)
 ("loop" @open "$" @close)
 ("switch" @open "$" @close)
 ("when" @open "$" @close)

@@ -36,8 +36,8 @@ The grammar fully supports:
 - Control flow (if/else/elseif/anif)
 - Multiple loop types (range, while, for-in)
 - Arrays and dictionaries
-- Word operators (plus, minus, times, div, mod)
-- Comparison operators (greater_than, lesser_than, is)
+- Symbol arithmetic operators (+, -, *, /, %, **); word forms removed
+- Comparison operators (<, >, <=, >=, is); word forms removed
 - Comments
 - Import statements
 - Compile-time conditionals (when)

@@ -12,8 +12,8 @@ This grammar provides syntax parsing for the Ahoy programming language, includin
 - Multiple loop types (`loop:start to end`, `loop element in array`, `loop key,val in dict`)
 - Arrays (`<1, 2, 3>`)
 - Dictionaries (`{"key":"value"}`)
-- Word operators (`plus`, `minus`, `times`, `div`, `mod`)
-- Comparison operators (`greater_than`, `lesser_than`, `is`)
+- Symbol arithmetic operators (`+`, `-`, `*`, `/`, `%`, `**`); word forms removed
+- Comparison operators (`<`, `>`, `<=`, `>=`, `is`); word forms removed
 - Comments (`? comment`)
 - Imports (`import "lib.h"`)
 - Compile-time conditionals (`when DEBUG then ...`)
