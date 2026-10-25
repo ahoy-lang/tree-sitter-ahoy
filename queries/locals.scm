@@ -4,6 +4,7 @@
   (if_statement)
   (loop_statement)
   (switch_statement)
+  (switch_expression)
   (when_statement)
 ] @scope
 

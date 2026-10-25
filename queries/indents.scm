@@ -4,6 +4,7 @@
   (if_statement)
   (loop_statement)
   (switch_statement)
+  (switch_expression)
   (case_statement)
   (enum_declaration)
   (struct_declaration)

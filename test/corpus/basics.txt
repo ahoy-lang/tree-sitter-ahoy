@@ -720,3 +720,241 @@ $
                   (identifier_or_discard)
                   (expression
                     (number)))))))))))
+
+================================================================================
+Walrus tuples
+================================================================================
+
+sx, sy, rs := light2d_screen|nodes, i|
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (tuple_assignment
+    (identifier_list
+      (identifier_or_discard
+        (identifier))
+      (identifier_or_discard
+        (identifier))
+      (identifier_or_discard
+        (identifier)))
+    (tuple_values
+      (expression
+        (call_expression
+          (identifier)
+          (argument_list
+            (expression
+              (identifier))
+            (expression
+              (identifier))))))))
+
+================================================================================
+Parenthesized identifiers are not lambdas
+================================================================================
+
+@ f||:
+  y: (x) + 1
+  g: (x): x
+  if not (hit) then k = k + 1 $
+$
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    (identifier)
+    (function_body
+      (variable_declaration
+        (identifier)
+        (expression
+          (binary_expression
+            (expression
+              (parenthesized_expression
+                (expression
+                  (identifier))))
+            (expression
+              (number)))))
+      (variable_declaration
+        (identifier)
+        (expression
+          (lambda
+            (lambda_param
+              (identifier))
+            (expression
+              (identifier)))))
+      (if_statement
+        (expression
+          (unary_expression
+            (expression
+              (parenthesized_expression
+                (expression
+                  (identifier))))))
+        (if_body
+          (assignment
+            (identifier)
+            (expression
+              (binary_expression
+                (expression
+                  (identifier))
+                (expression
+                  (number))))))))))
+
+================================================================================
+Elif arms may close with their own dollar
+================================================================================
+
+@ f||:
+  if a is 1 then
+    x: 1
+  $
+  elif a is 2 then
+    x: 2
+  $
+$
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    (identifier)
+    (function_body
+      (if_statement
+        (expression
+          (binary_expression
+            (expression
+              (identifier))
+            (expression
+              (number))))
+        (if_body
+          (variable_declaration
+            (identifier)
+            (expression
+              (number))))
+        (expression
+          (binary_expression
+            (expression
+              (identifier))
+            (expression
+              (number))))
+        (if_body
+          (variable_declaration
+            (identifier)
+            (expression
+              (number))))))))
+
+================================================================================
+Empty blocks
+================================================================================
+
+@ f||:
+  if a then
+  $
+  loop i:0 to 3 do
+  $
+  when debug then
+  $
+  switch v:
+  $
+$
+
+struct S:
+$
+
+enum E:
+$
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    (identifier)
+    (function_body
+      (if_statement
+        (expression
+          (identifier)))
+      (loop_statement
+        (identifier)
+        (expression
+          (number))
+        (expression
+          (number))
+        (loop_body))
+      (when_statement
+        (identifier)
+        (when_body))
+      (switch_statement
+        (expression
+          (identifier))
+        (switch_body))))
+  (struct_declaration
+    (identifier))
+  (enum_declaration
+    (identifier)))
+
+================================================================================
+When with else
+================================================================================
+
+@ f||:
+  when debug then
+    x: 1
+  $
+  else
+    x: 2
+  $
+$
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    (identifier)
+    (function_body
+      (when_statement
+        (identifier)
+        (when_body
+          (variable_declaration
+            (identifier)
+            (expression
+              (number))))
+        (when_body
+          (variable_declaration
+            (identifier)
+            (expression
+              (number))))))))
+
+================================================================================
+Primitive pipe calls
+================================================================================
+
+@ f||:
+  k: int|(out - lo) / step + 0.5|
+$
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    (identifier)
+    (function_body
+      (variable_declaration
+        (identifier)
+        (expression
+          (call_expression
+            (argument_list
+              (expression
+                (binary_expression
+                  (expression
+                    (binary_expression
+                      (expression
+                        (parenthesized_expression
+                          (expression
+                            (binary_expression
+                              (expression
+                                (identifier))
+                              (expression
+                                (identifier))))))
+                      (expression
+                        (identifier))))
+                  (expression
+                    (number)))))))))))

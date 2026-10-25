@@ -56,6 +56,9 @@
 (function_declaration
   name: (identifier) @function)
 
+(function_declaration
+  method_name: (identifier) @function)
+
 ; A method: the receiver type reads as a type, the method as a function
 (method_receiver
   receiver_type: (identifier) @type)
@@ -135,14 +138,22 @@
   "*"
   "/"
   "%"
+  "**"
   ">"
   "<"
   ">="
   "<="
   "??"
   "="
+  ":="
   "->"
   "=>"
+  "bor"
+  "bxor"
+  "band"
+  "shl"
+  "shr"
+  "bnot"
 ] @operator
 
 ; Function declaration marker
@@ -152,8 +163,11 @@
 
 [
   ":"
+  "::"
+  ":="
   ","
   "|"
+  "||"
   "$"
 ] @punctuation.delimiter
 

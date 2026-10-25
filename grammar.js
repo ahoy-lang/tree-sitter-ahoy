@@ -27,6 +27,21 @@ module.exports = grammar({
 		// `x: 5` - an assignment with a colon, or a declaration whose type
 		// is missing? The `=` after the type tells them apart.
 		[$.variable_declaration, $.assignment],
+		// `(x)` - a parenthesized identifier, or a lambda's parameter
+		// list? `lambda_param` ties with the identifier reading on
+		// purpose (both precedence 9): only the `:` after the bracket
+		// tells them apart (`(x): x + 1` vs `(x) + 1`), so the conflict
+		// explores both and the parse that completes wins.
+		[$.expression, $.lambda_param],
+		// Dangling `else`: GLR explores inner- and outer-attachment
+		// and the parse that completes wins (an `else` after a `$`-less
+		// inner arm can only complete attached inward).
+		[$.if_statement],
+		// Same for `when` with `else` (compiles to `#else`).
+		[$.when_statement],
+		// A `$`-less `when` arm vs the statements around it: the arm
+		// reading is the only one that can complete.
+		[$.when_body_open],
 		[$._statement, $.expression],
 		[$.switch_statement, $.switch_expression],
 	],
@@ -202,7 +217,12 @@ module.exports = grammar({
 				$.type,
 			),
 
-		// Variable declaration
+		// Variable declaration. A bare `x: v` is ALWAYS a declaration
+		// (the compiler says so: `:` declares, `=` reassigns), so the
+		// inferred form outranks the `:`-spelling of `assignment` via
+		// dynamic precedence. Without it, an unrelated syntax error
+		// later in the file can flip an early declaration into an
+		// assignment (seen live: `any_light: false` in light2d_build).
 		variable_declaration: ($) =>
 			choice(
 				// Typed variable: x:int= 5
@@ -214,7 +234,10 @@ module.exports = grammar({
 					field("value", $.expression)
 				),
 				// Inferred type: x: 5
-				seq(field("name", $.identifier), ":", field("value", $.expression))
+				prec.dynamic(
+					1,
+					seq(field("name", $.identifier), ":", field("value", $.expression))
+				)
 			),
 
 		// Constant declaration
@@ -248,13 +271,17 @@ module.exports = grammar({
 				field("value", $.expression),
 			),
 
-		// Struct declaration (single-line or multi-line)
+		// Struct declaration (single-line, multi-line, or empty: the
+		// compiler accepts `struct S: $` with no fields).
 		struct_declaration: ($) =>
 			seq(
 				"struct",
 				optional(field("name", $.identifier)),
 				":",
-				field("body", $.struct_body),
+				choice(
+					field("body", $.struct_body),
+					"$",
+				),
 			),
 
 		struct_body: ($) =>
@@ -264,6 +291,8 @@ module.exports = grammar({
 					repeat($.struct_field),
 					// The multi-line form closes the struct with `$`; the
 					// single-line form (`struct Foo: x:int`) just ends.
+					// (An empty `struct S: $` is a separate alternative
+					// on the declaration: this rule must match something.)
 					optional("$"),
 				),
 			),
@@ -308,7 +337,8 @@ module.exports = grammar({
 				$.object_literal,
 			),
 
-		// Enum declaration (single-line or multi-line)
+		// Enum declaration (single-line, multi-line, or empty: the
+		// compiler accepts `enum E: $` with no members).
 		enum_declaration: ($) =>
 			seq(
 				"enum",
@@ -318,7 +348,10 @@ module.exports = grammar({
 				optional(seq(":", field("enum_type", $.type))),
 				field("name", $.identifier),
 				":",
-				field("members", $.enum_members),
+				choice(
+					field("members", $.enum_members),
+					"$",
+				),
 			),
 
 		enum_members: ($) =>
@@ -328,6 +361,8 @@ module.exports = grammar({
 					repeat($.enum_member),
 					// The multi-line form closes the enum with `$`; the
 					// single-line form (`enum Color: red; blue`) just ends.
+					// (An empty `enum E: $` is a separate alternative on
+					// the declaration: this rule must match something.)
 					optional("$"),
 				),
 			),
@@ -367,7 +402,10 @@ module.exports = grammar({
 				field("types", $.type_list),
 			),
 
-		// Tuple assignment (multiple assignment)
+		// Tuple assignment (multiple assignment). The plain form takes
+		// `:` or the walrus `:=` (the compiler's "smart
+		// declare-or-reassign": `sx, sy, rs := f|x|`); the typed form
+		// takes either before the type list too.
 		tuple_assignment: ($) =>
 			choice(
 				// Typed: `a, b :(float, float) = values`. The types in
@@ -378,7 +416,7 @@ module.exports = grammar({
 					3,
 					seq(
 						field("targets", $.identifier_list),
-						":",
+						choice(":", ":="),
 						"(",
 						field("types", $.type_list),
 						")",
@@ -386,10 +424,10 @@ module.exports = grammar({
 						field("values", $.tuple_values),
 					),
 				),
-				// Plain: `a, b : values`
+				// Plain: `a, b : values` or `a, b := values`
 				seq(
 					field("targets", $.identifier_list),
-					":",
+					choice(":", ":="),
 					field("values", $.tuple_values),
 				),
 			),
@@ -424,47 +462,52 @@ module.exports = grammar({
 		// BODY` is the canonical form; the `else` must diverge (`return`,
 		// `halt`, `next`), there is no `then` and no `elif`.
 		if_statement: ($) =>
-			prec.right(
-				choice(
-					seq(
-						"guard",
+			choice(
+				seq(
+					"guard",
 						field("condition", $.expression),
 						"else",
 						field("alternative", $.if_body),
 						"$",
 					),
-					seq(
-						"if",
-						field("condition", $.expression),
-						"pass",
+				seq(
+					"if",
+					field("condition", $.expression),
+					"pass",
 						"else",
 						field("alternative", $.if_body),
 						"$",
 					),
-					seq(
-						"if",
-						field("condition", $.expression),
-						"then",
-						field("consequence", $.if_body),
-						repeat(
-							seq(
-								"elif",
-								field("alternative_condition", $.expression),
-								"then",
-								field("alternative", $.if_body),
-							),
+				seq(
+					"if",
+					field("condition", $.expression),
+					"then",
+					// Arms may be empty (`if a then $` is legal), so
+					// the consequence and the arm bodies are optional.
+					optional(field("consequence", $.if_body)),
+					repeat(
+						seq(
+							// Each arm may close with its own `$` (the
+							// compiler consumes one per arm), so an
+							// `elif` following a `$` still belongs to
+							// this `if`; the final `$` closes it.
+							optional("$"),
+							"elif",
+							field("alternative_condition", $.expression),
+							"then",
+							optional(field("alternative", $.if_body)),
 						),
-						optional(
-							seq(
-								"else",
-								optional(choice("then", ":")),
-								field("alternative", $.if_body),
-							),
-						),
-						"$",
 					),
+					optional(
+						seq(
+							optional("$"),
+							"else",
+							optional(field("alternative", $.if_body)),
+						),
+					),
+					"$",
 				),
-			),
+				),
 
 		// The body of an if/elif/else block.
 		//
@@ -511,9 +554,10 @@ module.exports = grammar({
 			),
 
 		switch_body: ($) =>
+			// A switch with no cases (`switch v: $`) is legal.
 			prec.right(
 				seq(
-					repeat1($.case_statement),
+					repeat($.case_statement),
 					"$",
 				),
 			),
@@ -621,27 +665,57 @@ module.exports = grammar({
 			),
 
 		loop_body: ($) =>
+			// An empty loop (`loop ... do $`) is legal.
 			prec.right(
 				seq(
-					$._statement,
 					repeat($._statement),
 					"$",
 				),
 			),
 
-		// When statement (compile-time conditional, always multi-line)
+		// When statement (compile-time conditional, always multi-line).
+		// With `else` it compiles to `#else`. The `$` belongs to the
+		// bodies: `when C then B $ else B2 $`, or with no `$` before a
+		// bare `else`, `when C then B else B2 $`. Both are explored and
+		// the parse that completes wins.
 		when_statement: ($) =>
 			seq(
 				"when",
 				field("condition", $.identifier),
 				"then",
-				field("body", $.when_body),
+				choice(
+					seq(
+						field("body", $.when_body),
+						optional(
+							seq(
+								"else",
+								field("alternative", $.when_body),
+							),
+						),
+					),
+					seq(
+						field("body", $.when_body_open),
+						"else",
+						field("alternative", $.when_body),
+					),
+				),
 			),
 
-		when_body: ($) =>
+		// A `when` arm whose `$` was left off before a bare `else`.
+		when_body_open: ($) =>
 			prec.right(
 				seq(
 					$._statement,
+					repeat($._statement),
+				),
+			),
+
+		when_body: ($) =>
+			// An empty `when` (`when C then $`) is legal. A body that
+			// ends at a bare `else` without `$` uses `when_body_open`
+			// instead (the second `when_statement` branch above).
+			prec.right(
+				seq(
 					repeat($._statement),
 					"$",
 				),
@@ -903,8 +977,10 @@ module.exports = grammar({
 			),
 
 		lambda_param: ($) =>
+			// Precedence 9 ties with the identifier reading of an
+			// expression on purpose: see the conflict above.
 			prec(
-				10,
+				9,
 				seq(
 					field("name", $.identifier),
 					optional(seq(":", field("type", $.type))),
@@ -913,7 +989,10 @@ module.exports = grammar({
 
 		// Function call. A call with no arguments is written with a doubled
 		// pipe (`f||`), which is a single token here - the same trick the
-		// method call uses, so the two stay apart.
+		// method call uses, so the two stay apart. The primitive types can
+		// also be called with pipes (`int|x|`, `float|1.5|`): the compiler
+		// reads those as conversion calls, and the keyword can never be a
+		// plain identifier, so there is no new ambiguity.
 		call_expression: ($) =>
 			prec(
 				7,
@@ -926,6 +1005,16 @@ module.exports = grammar({
 					),
 					seq(
 						field("function", $.identifier),
+						"||",
+					),
+					seq(
+						field("function", choice("int", "float", "double", "char", "string")),
+						"|",
+						optional($.argument_list),
+						"|",
+					),
+					seq(
+						field("function", choice("int", "float", "double", "char", "string")),
 						"||",
 					),
 				),
@@ -1002,9 +1091,23 @@ module.exports = grammar({
 			),
 
 		// Dict access with <>.
+		// NOTE: this rule is effectively unmatched today (see below).
 		// The closing `>` must not be read as a comparison operator, so the
 		// rule outranks the comparison: at `<"k">` the parser closes the
 		// access instead of shifting `>` into the value expression.
+		//
+		// KNOWN LIMITATION: `d<"k">`/`d<key>` still parse as a `<`
+		// comparison plus a stray `>`. Tree-sitter's lexer yields one
+		// token per position, so the `<` can only ever feed one rule:
+		// the comparison wins the tie and the access never advances.
+		// Any precedence that flips the tie breaks real comparisons
+		// (`a<b` reads as dict-`a` missing its `>`), which is worse:
+		// comparisons are everywhere, dict access has no engine, demo
+		// or game sites (only two in the already-broken tools/gd_shim).
+		// The compiler accepts both spellings (its gate looks ahead to
+		// the `>`); a future fix needs the gate's two-token lookahead,
+		// which tree-sitter cannot express. Verified by experiment in
+		// detail; do not "fix" this with precedence tweaks alone.
 		dict_access: ($) =>
 			seq(
 				field(
